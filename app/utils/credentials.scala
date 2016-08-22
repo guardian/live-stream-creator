@@ -1,6 +1,7 @@
 package utils
 
 import play.api.libs.json.{JsResultException, Json, JsValue}
+import play.api.Logger
 
 import scala.io.Source
 
@@ -23,7 +24,7 @@ case class credentials(filename:String) {
       )
     } catch {
       case e:JsResultException =>
-        println("Invalid credentials!")
+        Logger.error("Invalid Google credentials in " + filename + ": " + e.toString)
         throw new InvalidCredentialException
     }
   }

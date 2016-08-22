@@ -6,11 +6,17 @@
 #GET     /                           controllers.Application.index
 GET     /healthcheck                controllers.Application.healthcheck
 
+#Google oauth stuff - testing, oauth callback, logout.
 GET     /testauth                   controllers.GoogleAuthController.testGoogleAuth
 GET    /oauth2callback             controllers.GoogleAuthController.oauth2callback
 GET     /logout                     controllers.GoogleAuthController.logout
 
+#Testing getting info from YouTube to prove we're authenticated
 GET     /list_channel/:channel_id      controllers.YTStreamsController.list_channel(channel_id: String)
+
+#Testing: form for creating a new yt "stream", i.e. ingest config - NOT event
+GET     /new_stream                 controllers.YTStreamsController.create_stream_get
+POST    /new_stream                 controllers.YTStreamsController.create_stream_post
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

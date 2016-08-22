@@ -1,0 +1,27 @@
+@(streamForm: Form[YTStream])
+
+@helper.form(action = routes.YTStreamsController.create_stream_post()) {
+    @helper.inputText(YTStreamsController.streamForm("title"))
+    @helper.textarea(YTStreamsController.streamForm("description"))
+    @helper.select(YTStreamsController.streamForm("frame_rate"),
+        Seq[(String,String)](
+            ("30fps","30fps"),
+            ("60fps","60fps")
+        )
+    )
+    @helper.select(YTStreamsController.streamForm("ingestion_type"),
+        Seq[(String,String)](
+            ("rtmp","RTMP"),
+            ("dash","DASH")
+        )
+    )
+    @helper.select(YTStreamsController.streamForm("resolution"),
+        Seq[(String,String)](
+            ("720p","720p"),
+            ("1080p","1080p")
+        )
+    )
+    @helper.checkbox(YTStreamsController.streamForm("reusable"))
+    @helper.inputText(YTStreamsController.streamForm("channel_id"))
+    <input type="submit" value="Submit">
+}

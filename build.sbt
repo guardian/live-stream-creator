@@ -14,4 +14,5 @@ libraryDependencies += "com.google.apis" % "google-api-services-youtube" % "v3-r
 
 libraryDependencies ++= Seq( jdbc , anorm , cache , ws )
 
+
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )

@@ -3,9 +3,15 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+#GET     /                           controllers.Application.index
+GET     /healthcheck                controllers.Application.healthcheck
+
+GET     /testauth                   controllers.GoogleAuthController.testGoogleAuth
+GET    /oauth2callback             controllers.GoogleAuthController.oauth2callback
+GET     /logout                     controllers.GoogleAuthController.logout
+
+GET     /list_channel/:channel_id      controllers.YTStreamsController.list_channel(channel_id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
-    

@@ -1,0 +1,375 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "d41083f6-7768-4709-8b74-30fc781701ab": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 210,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": [],
+                "isconnectedto": [
+                    "55d03a0a-afde-4d94-9040-c741c596ba56"
+                ],
+                "isassociatedwith": [
+                    "d035b7c2-7b81-48c8-aced-e6d2a058d1a1"
+                ]
+            },
+            "d035b7c2-7b81-48c8-aced-e6d2a058d1a1": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 210,
+                    "y": 30
+                },
+                "z": 1,
+                "embeds": [],
+                "ismemberof": [
+                    "29d9f23a-24b8-4297-b96c-18e0465ac54f"
+                ],
+                "isrelatedto": [
+                    "d035b7c2-7b81-48c8-aced-e6d2a058d1a1",
+                    "55d03a0a-afde-4d94-9040-c741c596ba56",
+                    "ef7fa456-6780-48a0-a1d3-ad4ee73b4b00",
+                    "29d9f23a-24b8-4297-b96c-18e0465ac54f"
+                ]
+            },
+            "55d03a0a-afde-4d94-9040-c741c596ba56": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 50,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": [],
+                "ismemberof": [
+                    "88c80d27-8255-422c-beff-e34deb1527e7"
+                ]
+            },
+            "ef7fa456-6780-48a0-a1d3-ad4ee73b4b00": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 100,
+                    "y": 30
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "8b3fea5b-b9be-4b70-8262-e0d6039f04f7"
+                ]
+            },
+            "8b3fea5b-b9be-4b70-8262-e0d6039f04f7": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 10,
+                    "y": 30
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "29d9f23a-24b8-4297-b96c-18e0465ac54f": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 350,
+                    "y": 30
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "88c80d27-8255-422c-beff-e34deb1527e7": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -80,
+                    "y": 160
+                },
+                "z": 0,
+                "embeds": []
+            }
+        }
+    },
+    "Resources": {
+        "ASASG2NFMH": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "Cooldown": "300",
+                "DesiredCapacity": "1",
+                "HealthCheckType": "EC2",
+                "HealthCheckGracePeriod": 300,
+                "LaunchConfigurationName": {
+                    "Ref": "ASLC13W7C"
+                },
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "ELBLBTSL3"
+                    }
+                ],
+                "VPCZoneIdentifier": [
+                    "subnet-d58a938c",
+                    "subnet-577ca433",
+                    "subnet-a0d211d6"
+                ],
+                "MaxSize": "4",
+                "MinSize": "1",
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": "CODE",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "multimedia",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Role",
+                        "Value": "live-stream-creator",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "App",
+                        "Value": "live-stream-creator",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d41083f6-7768-4709-8b74-30fc781701ab"
+                }
+            }
+        },
+        "ASLC13W7C": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "IamInstanceProfile": {
+                    "Ref": "IAMIP38VNO"
+                },
+                "ImageId": "ami-c79bebb4",
+                "InstanceType": "t2.micro",
+                "KeyName": "AndyTestKey",
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "/opt/features/ssh-keys/initialise-keys-and-cron-job.sh -b github-team-keys -t multimedia -l || true\n",
+                                "/opt/features/native-packager/install.sh -b gnm-multimedia-rr-deployables -t tgz -s\n"
+                            ]
+                        ]
+                    }
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "EC2SG2PWPP"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d035b7c2-7b81-48c8-aced-e6d2a058d1a1"
+                }
+            }
+        },
+        "ELBLBTSL3": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "LoadBalancerName": "live-stream-creator",
+                "Listeners": [
+                    {
+                        "InstancePort": "9000",
+                        "InstanceProtocol": "http",
+                        "LoadBalancerPort": "80",
+                        "Protocol": "http"
+                    }
+                ],
+                "HealthCheck": {
+                    "HealthyThreshold": "2",
+                    "Interval": "30",
+                    "Target": "HTTP:9000/healthcheck",
+                    "Timeout": "5",
+                    "UnhealthyThreshold": "2"
+                },
+                "Subnets": [
+                    "subnet-d58a938c",
+                    "subnet-577ca433",
+                    "subnet-a0d211d6"
+                ],
+                "SecurityGroups": [
+                    {
+                        "Ref": "EC2SG3IL8D"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": "CODE"
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "multimedia"
+                    },
+                    {
+                        "Key": "App",
+                        "Value": "live-stream-creator"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "55d03a0a-afde-4d94-9040-c741c596ba56"
+                }
+            }
+        },
+        "IAMIP38VNO": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "IAMR2DJTU"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "ef7fa456-6780-48a0-a1d3-ad4ee73b4b00"
+                }
+            }
+        },
+        "IAMR2DJTU": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": "GetTeamKeysPolicy",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:GetObject"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:s3:::github-team-keys/*"
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:ListBucket"
+                                    ],
+                                    "Resource": "arn:aws:s3:::github-team-keys"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ec2:DescribeTags"
+                                    ],
+                                    "Resource": "*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:HeadObject",
+                                        "s3:GetObject",
+                                        "s3:GetObjectAcl"
+                                    ],
+                                    "Resource": "arn:aws:s3:::gnm-multimedia-rr-deployables/*"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "Path": "/"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "8b3fea5b-b9be-4b70-8262-e0d6039f04f7"
+                }
+            }
+        },
+        "EC2SG2PWPP": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "HTTP access from VPC",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "10.255.10.0/24",
+                        "IpProtocol": "tcp",
+                        "FromPort": 9000,
+                        "ToPort": 9000
+                    }
+                ],
+                "VpcId": "vpc-d5c5cab0"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "29d9f23a-24b8-4297-b96c-18e0465ac54f"
+                }
+            }
+        },
+        "EC2SG3IL8D": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "HTTP&HTTPS from world",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "IpProtocol": "tcp",
+                        "FromPort": 80,
+                        "ToPort": 80
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "IpProtocol": "tcp",
+                        "FromPort": 443,
+                        "ToPort": 443
+                    }
+                ],
+                "VpcId": "vpc-d5c5cab0"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "88c80d27-8255-422c-beff-e34deb1527e7"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+{
+    //"stack" refers to the value of the "App" tag, allowing RR to find which autoscaling group to change.
+    //this is looked up on the App tag of the autoscaling group
+    "stack": "live-stream-creator",
+    //"defaultStacks" refer to the value of the "Stack" tag, allowing RR to find which autoscaling group to change
+    "defaultStacks": ["multimedia"],
+    //this is what we're actually deploying
+    "packages": {
+        //this refers to the name of the artefact.  It's OUTGOING, i.e. RR takes in the artefact built by CI,
+        //unpacks it, checks it, then rebuilds it here.
+        "live-stream-creator": {
+            "type": "autoscaling",
+            //bucket where to put it. normally one bucket in each amazon account, with subdirs for each app.
+            //possibly gets created if it does not exist
+            "data": {
+                "bucket": "gnm-multimedia-riffraff-dist",
+                "publicReadAcl": false
+            }
+        }
+    },
+    "recipes": {
+        //actions to do
+        "default": { //this is executed by default; others can be selected in the UI
+            "depends": ["deploy"] //declare dependency on "deploy" recipe
+        },
+        "deploy": {
+            //where are these defined???
+            "actionsBeforeApp": ["live-stream-creator.uploadArtifacts", "live-stream-creator.deploy"]
+        }
+    }
+}

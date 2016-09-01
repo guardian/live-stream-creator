@@ -1,0 +1,26 @@
+{
+    "stack": "live-stream-creator",
+    "defaultStacks": ["multimedia"],
+    "packages": {
+        "live-stream-creator": {
+            "type": "autoscaling",
+            "data": {
+                "bucket": "gnm-multimedia-rr-deployables",
+                "publicReadAcl": false
+            }
+        },
+        "cfn": {
+            "type": "cloud-formation",
+            "apps": ["live-stream-creator"],
+
+        }
+    },
+    "recipes": {
+        "default": {
+            "depends": ["deploy"]
+        },
+        "deploy": {
+            "actionsBeforeApp": ["live-stream-creator.uploadArtifacts", "live-stream-creator.deploy"]
+        }
+    }
+}

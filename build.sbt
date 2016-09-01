@@ -1,11 +1,9 @@
+import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport._
 import sbt.Keys._
 
 name := "live-stream-creator"
 
 version := "1.0"
-
-/*i am not sure if we need this or not?*/
-//lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 lazy val `livestreamcreator` = (project in file("."))
     .enablePlugins(PlayScala, RiffRaffArtifact, UniversalPlugin)
@@ -18,7 +16,8 @@ lazy val `livestreamcreator` = (project in file("."))
         riffRaffArtifactResources := Seq(
             riffRaffPackageType.value -> s"packages/${name.value}/${riffRaffPackageType.value.getName}",
             baseDirectory.value / "conf/deploy.json" -> "deploy.json"
-        )
+        ),
+        riffRaffPackageType := (packageZipTarball in Universal).value
     )
 
 scalaVersion := "2.11.6"
@@ -41,18 +40,4 @@ libraryDependencies ++= Seq(
     ws
 )
 
-
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
-
-riffRaffPackageType := (packageZipTarball in Universal).value
-
 def env(key: String): Option[String] = Option(System.getenv(key))
-
-/* //commenting these out as they should be set above
-riffRaffBuildIdentifier := env("CIRCLE_BUILD_NUM").getOrElse("DEV")
-
-riffRaffUploadArtifactBucket := Option("riffraff-artifact")
-
-riffRaffUploadManifestBucket := Option("riffraff-builds")
-
-*/

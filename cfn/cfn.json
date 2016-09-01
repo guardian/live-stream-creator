@@ -1,5 +1,19 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "DeploymentStage": {
+            "Type": "String",
+            "Description": "Are we deploying CODE or PROD?",
+            "AllowedValues": [
+                "CODE",
+                "PROD"
+            ]
+        },
+        "InstanceKey": {
+            "Type": "String",
+            "Description": "Name of a pre-created keypair to associate with any instances created"
+        }
+    },
     "Metadata": {
         "AWS::CloudFormation::Designer": {
             "d41083f6-7768-4709-8b74-30fc781701ab": {
@@ -135,7 +149,7 @@
                 "Tags": [
                     {
                         "Key": "Stage",
-                        "Value": "CODE",
+                        "Value": {"Ref": "DeploymentStage"},
                         "PropagateAtLaunch": "true"
                     },
                     {
@@ -169,7 +183,7 @@
                 },
                 "ImageId": "ami-c79bebb4",
                 "InstanceType": "t2.micro",
-                "KeyName": "AndyTestKey",
+                "KeyName": { "Ref": "InstanceKey" },
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [
@@ -226,7 +240,7 @@
                 "Tags": [
                     {
                         "Key": "Stage",
-                        "Value": "CODE"
+                        "Value": { "Ref": "DeploymentStage" }
                     },
                     {
                         "Key": "Stack",

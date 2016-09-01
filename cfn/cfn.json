@@ -158,11 +158,6 @@
                         "PropagateAtLaunch": "true"
                     },
                     {
-                        "Key": "Role",
-                        "Value": "live-stream-creator",
-                        "PropagateAtLaunch": "true"
-                    },
-                    {
                         "Key": "App",
                         "Value": "live-stream-creator",
                         "PropagateAtLaunch": "true"

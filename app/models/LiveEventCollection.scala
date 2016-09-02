@@ -7,8 +7,6 @@ import com.github.nscala_time.time.Imports._
 import com.gu.scanamo.{Scanamo, DynamoFormat}
 import org.joda.time.DateTime
 
-import scalaz.Inject
-
 object LiveEventCollection  {
   implicit val jodaStringFormat = DynamoFormat.coercedXmap[DateTime, Long, IllegalArgumentException](new DateTime(_))(_.getMillis)
 

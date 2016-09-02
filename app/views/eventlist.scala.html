@@ -1,0 +1,22 @@
+@(events: List[Event])
+
+<table>
+    @for(event <- events) {
+        <tr>
+            <td>@event.start_time</td>
+            <td>@event.channel_id</td>
+            <td>@event.creator</td>
+            <td><ul>@for(contact <- event.contacts) {
+                <li>@contact</li>
+            }</ul>
+            </td>
+            <td>(no status)</td>
+            <td><ul>@for(channel <- event.output_channels) {
+                <li>@channel</li>
+            }</ul>
+            </td>
+            <td>@event.status</td>
+        </tr>
+    }
+
+</table>

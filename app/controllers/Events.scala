@@ -1,9 +1,14 @@
 package controllers
 
+import argonaut.Argonaut._
+import argonaut.{Json, CodecJson}
+import com.gu.scanamo.error.InvalidPropertiesError
 import play.api.mvc._
-import models.Event
+import models._
 import play.api.data._
 import play.api.data.Forms._
+import javax.inject.Inject
+import com.github.nscala_time.time.Imports.DateTime
 
 /*
 start_time: DateTime,
@@ -14,7 +19,9 @@ start_time: DateTime,
                       status: String
  */
 
-object Events extends Controller {
+object Events
+  extends Controller {
+
   val eventForm = Form(
     mapping(
       "start_time"->jodaDate,
@@ -25,7 +32,18 @@ object Events extends Controller {
       "status"->text
     )(Event.apply)(Event.unapply)
   )
-
+  //implicit lazy val JsonDateFormatter= argonaut.EncodeJson[com.github.nscala_time.time.Imports.DateTime](Codec)
+//  implicit lazy val JsonDataCodec: CodecJson[com.github.nscala_time.time.Imports.DateTime] =
+//    casecodec1(DateTime.parse(_),_.toString)
+/*  implicit lazy val EventCodec: CodecJson[Event]=casecodec6(Event.apply, Event.unapply)(
+    "start_time",
+    "channel_id",
+    "creator",
+    "contacts",
+    "output_channels",
+    "status"
+  )
+*/
   def add_form = Action {
     Ok(views.html.eventform(eventForm))
   }
@@ -60,4 +78,22 @@ object Events extends Controller {
     Ok("Save worked")
   }
 
+
+  /*
+  output a list of known events
+   */
+  def event_list = Action { implicit request =>
+    println(LiveEventCollection.all(10))
+//    val events:List[Event] = LiveEventCollection.all(10,configuration).map(
+//      (_ match {
+//      case event_data: Event => _
+//      case _ =>
+//    }).map(
+//      _.asInstanceOf[Event]
+//      ))
+
+
+    Ok(views.html.eventlist(LiveEventCollection.all(10)))
+  }
 }
+

@@ -33,7 +33,9 @@ libraryDependencies += "com.google.apis" % "google-api-services-youtube" % "v3-r
 libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.12.0"
 
 libraryDependencies ++= Seq(
-    "com.gu" %% "scanamo" % "0.7.0"
+    "com.gu" %% "scanamo" % "0.7.0",
+    "io.argonaut" %% "argonaut" % "6.1",
+    "javax.inject" % "javax.inject" % "1"
 )
 
 libraryDependencies ++= Seq(

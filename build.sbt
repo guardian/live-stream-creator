@@ -30,6 +30,12 @@ libraryDependencies += "com.google.api-client" % "google-api-client" % "1.22.0"
 
 libraryDependencies += "com.google.apis" % "google-api-services-youtube" % "v3-rev178-1.22.0"
 
+libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.12.0"
+
+libraryDependencies ++= Seq(
+    "com.gu" %% "scanamo" % "0.7.0"
+)
+
 libraryDependencies ++= Seq(
     cache,
     ws,
@@ -39,5 +45,6 @@ libraryDependencies ++= Seq(
     cache,
     ws
 )
+
 
 def env(key: String): Option[String] = Option(System.getenv(key))

@@ -1,0 +1,22 @@
+@(eventForm: Form[Event])
+
+<!--
+/*
+start_time: DateTime,
+channel_id: String,
+creator: String,
+contacts: Seq[String],
+output_channels: Seq[String],
+status: String
+*/
+-->
+
+@helper.form(action = routes.Events.create_event){
+    @helper.inputDate(eventForm("start_time"))
+    @helper.inputText(eventForm("channel_id"))
+    @helper.inputText(eventForm("creator"))
+    @helper.inputText(eventForm("contacts"))
+    @helper.inputText(eventForm("output_channels"))
+    @helper.inputText(eventForm("status"))
+    <input type="submit" value="Create">
+}

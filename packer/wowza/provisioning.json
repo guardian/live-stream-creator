@@ -8,13 +8,17 @@
         "source_ami": "{{user `wowza_ami`}}",
         "instance_type": "c3.large",
         "ssh_username": "ec2-user",
-        "ami_name": "live-streaming_{{isotime \"2006-01-02_15-04-05\"}}",
+        "ami_name": "wowza_{{isotime \"2006-01-02_15-04-05\"}}",
         "ami_description": "Wowza Streaming Engine with Guardian settings",
-        "name": "live-streaming_{{isotime \"2006-01-02_15-04-05\"}}",
+        "name": "wowza_{{isotime \"2006-01-02_15-04-05\"}}",
         "tags": {
-            "Name": "live-streaming_{{isotime \"2006-01-02_15-04-05\"}}",
+            "Name": "wowza_{{isotime \"2006-01-02_15-04-05\"}}",
             "SourceAMI": "{{user `wowza_ami`}}"
-        }
+        },
+        "launch_block_device_mappings": [{
+            "device_name": "/dev/sdb",
+            "delete_on_termination": true
+        }]
     }],
     "provisioners": [{
         "type": "file",

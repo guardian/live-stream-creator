@@ -1,0 +1,14 @@
+@(eventForm: Form[Event])(implicit messages: Messages)
+
+@base(title="New Event"){
+
+@helper.form(action = routes.Events.create_event){
+    @helper.inputDate(eventForm("start_time"))
+    @helper.inputText(eventForm("channel_id"))
+    @helper.inputText(eventForm("creator"))
+    @helper.inputText(eventForm("contacts"))
+    @helper.inputText(eventForm("output_channels"))
+    @helper.inputText(eventForm("status"))
+    <input type="submit" value="Create">
+}
+}

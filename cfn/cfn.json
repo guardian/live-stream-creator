@@ -12,6 +12,14 @@
         "InstanceKey": {
             "Type": "String",
             "Description": "Name of a pre-created keypair to associate with any instances created"
+        },
+        "Region": {
+            "Type": "String",
+            "Description": "Amazon region where we are launching"
+        },
+        "AccountID": {
+            "Type": "String",
+            "Description": "Account ID that this is being launched in"
         }
     },
     "Metadata": {
@@ -321,6 +329,32 @@
                                         "s3:GetObjectAcl"
                                     ],
                                     "Resource": "arn:aws:s3:::gnm-multimedia-rr-deployables/*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:*"
+                                    ],
+                                    "Resource": {
+                                        "Fn::Join": [
+                                            ":",
+                                            [
+                                                "arn",
+                                                "aws",
+                                                "dynamodb",
+                                                {"Ref": "Region"},
+                                                {"Ref": "AccountID"},
+                                                {"Fn::Join": [
+                                                    "/",
+                                                    [
+                                                        "table",
+                                                        {"Ref": "EventModelTable"}
+                                                    ]
+                                                ]
+                                                }
+                                            ]
+                                        ]
+                                    }
                                 }
                             ]
                         }
@@ -331,6 +365,77 @@
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "8b3fea5b-b9be-4b70-8262-e0d6039f04f7"
+                }
+            }
+        },
+        "EventModelTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "channel_id",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "start_time",
+                        "AttributeType": "N"
+                    },
+                    {
+                        "AttributeName": "status",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "creator",
+                        "AttributeType": "S"
+                    }
+                ],
+                "GlobalSecondaryIndexes": [
+                    {
+                        "IndexName": "creator_index",
+                        "KeySchema": [
+                            {
+                                "AttributeName": "creator",
+                                "KeyType": "HASH"
+                            }
+                        ],
+                        "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": 1,
+                            "WriteCapacityUnits": 1
+                        }
+                    },
+                    {
+                        "IndexName": "status_index",
+                        "KeySchema": [
+                            {
+                                "AttributeName": "status",
+                                "KeyType": "HASH"
+                            }
+                        ],
+                        "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": 1,
+                            "WriteCapacityUnits": 1
+                        }
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "channel_id",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "start_time",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
                 }
             }
         },

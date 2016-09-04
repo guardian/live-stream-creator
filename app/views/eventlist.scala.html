@@ -1,0 +1,36 @@
+@(events: List[Event])
+@base(title = "Live Events") {
+
+    <table class="dashboardpanel">
+        <span>
+            <a href="@routes.Events.add_form"><img class="smallicon" src="@routes.Assets.at("Button-Add-icon.png")"></a>
+        </span>
+        <tr class="dashboardheader">
+            <td>Start Time</td>
+            <td>Channel</td>
+            <td>Creator</td>
+            <td>Contact(s)</td>
+            <td>Feed Status</td>
+            <td>Output Channels</td>
+            <td>Event Status</td>
+        </tr>
+        @for(event <- events) {
+            <tr>
+                <td>@event.start_time</td>
+                <td>@event.channel_id</td>
+                <td>@event.creator</td>
+                <td><ul>@for(contact <- event.contacts) {
+                    <li>@contact</li>
+                }</ul>
+                </td>
+                <td>(no status)</td>
+                <td><ul>@for(channel <- event.output_channels) {
+                    <li>@channel</li>
+                }</ul>
+                </td>
+                <td>@event.status</td>
+            </tr>
+        }
+
+    </table>
+}

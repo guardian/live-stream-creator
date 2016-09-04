@@ -1,9 +1,10 @@
 import org.specs2.mutable._
 import org.specs2.runner._
-import org.junit.runner._
 
 import play.api.test._
 import play.api.test.Helpers._
+import org.junit.runner.RunWith
+import play.api.test.WithApplication
 
 /**
  * Add your spec here.

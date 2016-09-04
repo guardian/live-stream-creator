@@ -1,0 +1,73 @@
+html, body, p, th, td, li, dd, dt, pre {
+ font: 1em Verdana, Arial, Helvetica, sans-serif;
+ }
+
+div.login_bar {
+ z-index: 99999;
+ float:right; font-size:0.9em; border:1px;
+ line-height: 50px;	//size of the google+ user image
+ vertical-align:top;
+}
+
+.error { color:#FF0000; }
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: Verdana, Arial, Helvetica, sans-serif;
+ }
+ h1 { font-size: 1.7em; }
+ h2 { font-size: 1.5em; }
+ h3 { font-size: 1.3em ; }
+ h4 { font-size: 1.1em; }
+ h5 { font-size: 1.0em; margin:0; padding:0; }
+ h6 { font-size: 1.0em; }
+
+p.descriptive { font-size:0.8em; margin:0; padding:0; }
+a:link { color: #00f; }
+ a:visited { color: #009; }
+ a:hover { color: #06f; }
+ a:active { color: #0cf; }
+
+td { vertical-align: top; }
+
+
+tr.odd { background-color: #FFFFFF; }
+tr.even { background-color: #CCCCCC; }
+
+.menupanel { display: block; border: 1.0px; border-color: "black"; background-color: #AAAAAA; padding:0.1em; }
+
+iframe { border:none; }
+
+table.dashboardpanel {
+	border: 2px solid black;
+	border-collapse: collapse;
+	font: 0.8em "Lucida Console",Monaco,monospace;
+	border-spacing: 3px;
+	overflow: scroll;
+//	width:450px;
+}
+td.dashboardpanel {
+	border: 1px solid black;
+	padding: 3px;
+}
+
+tr.dashboardheader {
+	font-size:1.1em;
+	font-weight: bold;
+	background-color: #AAAAFF;
+}
+
+div.dashboardpanel {
+	/*width:200px; */
+	height:100%;
+	padding:10px;
+	float: left;
+	overflow: auto;
+}
+
+.smallicon {
+    width: 16px;
+}
+
+.medicon {
+    width: 24px;
+}

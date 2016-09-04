@@ -37,6 +37,8 @@ libraryDependencies ++= Seq(
     "javax.inject" % "javax.inject" % "1"
 )
 
+libraryDependencies += specs2 % Test
+
 libraryDependencies ++= Seq(
     cache,
     ws,

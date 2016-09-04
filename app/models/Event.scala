@@ -12,7 +12,10 @@ case class Event (start_time: DateTime,
                       output_channels: Seq[String],
                       status: String
                         ) {
-  implicit val jodaStringFormat = DynamoFormat.coercedXmap[DateTime, Long, IllegalArgumentException](new DateTime(_))(_.getMillis)
+  /*
+  Implicit converter to change joda datetime into a Long of epoch time for storage in dynamo
+   */
+  implicit val jodaNumberFormat = DynamoFormat.coercedXmap[DateTime, Long, IllegalArgumentException](new DateTime(_))(_.getMillis)
 
   /*
   returns either Left(error) or Right(object) depending on whether save succeeded or not

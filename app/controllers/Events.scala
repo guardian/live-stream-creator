@@ -5,14 +5,8 @@ import models._
 import play.api.data._
 import play.api.data.Forms._
 import javax.inject._
-
-
-trait EventsInterface extends Controller {
-  def add_form:Action[AnyContent]
-  def create_event:Action[AnyContent]
-  def update_event(eventId: String):Action[AnyContent]
-  def event_list:Action[AnyContent]
-}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 
 class Events @Inject()(configuration: play.api.Configuration)
   extends Controller {
@@ -41,7 +35,7 @@ class Events @Inject()(configuration: play.api.Configuration)
         BadRequest(views.html.eventform(formWithErrors))
       },
       event_data => {
-        event_data.save()
+        event_data.save(configuration)
       }
     )
     Redirect(routes.Events.event_list())
@@ -56,7 +50,7 @@ class Events @Inject()(configuration: play.api.Configuration)
         BadRequest(views.html.eventform(formWithErrors))
       },
       event_data => {
-        event_data.save()
+        event_data.save(configuration)
       }
     )
     Redirect(routes.Events.event_list())
@@ -68,6 +62,6 @@ class Events @Inject()(configuration: play.api.Configuration)
    */
   def event_list = Action { implicit request =>
 
-    Ok(views.html.eventlist(LiveEventCollection.all(10)))
+    Ok(views.html.eventlist(LiveEventCollection.all(configuration,10)))
   }
 }

@@ -15,7 +15,7 @@ import javax.inject.{Inject, Singleton}
 class Global @Inject() (injector: Injector) extends GlobalSettings {
   val props = new Properties()
 
-  override def getControllerInstance[A](controllerClass: Class[A]) = injector.getInstance(controllerClass)
+  //override def getControllerInstance[A](controllerClass: Class[A]) = injector.getInstance(controllerClass)
   def loadSettings(filepath: String) = {
     props.load(new FileInputStream(filepath))
   }

@@ -17,11 +17,11 @@ case class Event (start_time: DateTime,
   /*
   returns either Left(error) or Right(object) depending on whether save succeeded or not
    */
-  def save() = {
+  def save(configuration: play.api.Configuration) = {
     val client = new AmazonDynamoDBClient()
     client.setRegion(Region.getRegion(Regions.EU_WEST_1))
 
-    Scanamo.put(client)("live-stream-creator-EventModelTable-VVXLQ8GMND5V")(this)
+    Scanamo.put(client)(configuration.underlying.getString("table.events"))(this)
   }
 }
 

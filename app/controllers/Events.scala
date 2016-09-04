@@ -1,25 +1,20 @@
 package controllers
 
-import argonaut.Argonaut._
-import argonaut.{Json, CodecJson}
-import com.gu.scanamo.error.InvalidPropertiesError
 import play.api.mvc._
 import models._
 import play.api.data._
 import play.api.data.Forms._
-import javax.inject.Inject
-import com.github.nscala_time.time.Imports.DateTime
+import javax.inject._
 
-/*
-start_time: DateTime,
-                      channel_id: String,
-                      creator: String,
-                      contacts: List[String],
-                      output_channels: List[String],
-                      status: String
- */
 
-object Events
+trait EventsInterface extends Controller {
+  def add_form:Action[AnyContent]
+  def create_event:Action[AnyContent]
+  def update_event(eventId: String):Action[AnyContent]
+  def event_list:Action[AnyContent]
+}
+
+class Events @Inject()(configuration: play.api.Configuration)
   extends Controller {
 
   val eventForm = Form(
@@ -32,18 +27,7 @@ object Events
       "status"->text
     )(Event.apply)(Event.unapply)
   )
-  //implicit lazy val JsonDateFormatter= argonaut.EncodeJson[com.github.nscala_time.time.Imports.DateTime](Codec)
-//  implicit lazy val JsonDataCodec: CodecJson[com.github.nscala_time.time.Imports.DateTime] =
-//    casecodec1(DateTime.parse(_),_.toString)
-/*  implicit lazy val EventCodec: CodecJson[Event]=casecodec6(Event.apply, Event.unapply)(
-    "start_time",
-    "channel_id",
-    "creator",
-    "contacts",
-    "output_channels",
-    "status"
-  )
-*/
+
   def add_form = Action {
     Ok(views.html.eventform(eventForm))
   }
@@ -60,7 +44,7 @@ object Events
         event_data.save()
       }
     )
-    Ok("Save worked")
+    Redirect(routes.Events.event_list())
   }
 
   /*
@@ -75,7 +59,7 @@ object Events
         event_data.save()
       }
     )
-    Ok("Save worked")
+    Redirect(routes.Events.event_list())
   }
 
 
@@ -83,17 +67,7 @@ object Events
   output a list of known events
    */
   def event_list = Action { implicit request =>
-    println(LiveEventCollection.all(10))
-//    val events:List[Event] = LiveEventCollection.all(10,configuration).map(
-//      (_ match {
-//      case event_data: Event => _
-//      case _ =>
-//    }).map(
-//      _.asInstanceOf[Event]
-//      ))
-
 
     Ok(views.html.eventlist(LiveEventCollection.all(10)))
   }
 }
-

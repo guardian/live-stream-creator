@@ -8,7 +8,7 @@
             <IPAddress>*</IPAddress>
             <Port>8087</Port>
             <!-- none, basic, digest-->
-            <AuthenticationMethod>digest</AuthenticationMethod>
+            <AuthenticationMethod>none</AuthenticationMethod>
             <DiagnosticURLEnable>true</DiagnosticURLEnable>
             <SSLConfig>
                 <Enable>false</Enable>

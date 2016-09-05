@@ -2,13 +2,6 @@ html, body, p, th, td, li, dd, dt, pre {
  font: 1em Verdana, Arial, Helvetica, sans-serif;
  }
 
-div.login_bar {
- z-index: 99999;
- float:right; font-size:0.9em; border:1px;
- line-height: 50px;	//size of the google+ user image
- vertical-align:top;
-}
-
 .error { color:#FF0000; }
 
 h1, h2, h3, h4, h5, h6 {
@@ -33,18 +26,10 @@ td { vertical-align: top; }
 tr.odd { background-color: #FFFFFF; }
 tr.even { background-color: #CCCCCC; }
 
-.menupanel { display: block; border: 1.0px; border-color: "black"; background-color: #AAAAAA; padding:0.1em; }
+.menupanel { display: block; border: 1.0px; border-color: #000000; background-color: #AAAAAA; padding:0.1em; }
 
 iframe { border:none; }
 
-table.dashboardpanel {
-	border: 2px solid black;
-	border-collapse: collapse;
-	font: 0.8em "Lucida Console",Monaco,monospace;
-	border-spacing: 3px;
-	overflow: scroll;
-//	width:450px;
-}
 td.dashboardpanel {
 	border: 1px solid black;
 	padding: 3px;

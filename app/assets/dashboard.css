@@ -4,8 +4,8 @@ table.dashboardpanel {
     font: 0.8em "Lucida Console",Monaco,monospace;
     border-spacing: 3px;
     overflow: scroll;
-//  width:450px;
 }
+
 p.footnote {
     font-size:0.6em;
     font-style:italic;
@@ -14,6 +14,7 @@ td {
     border: 1px solid black;
     padding: 3px;
 }
+
 td.link {
     color: #0000ff;
   text-decoration:none;
@@ -29,65 +30,28 @@ tr.dashboardheader {
     background-color: #AAAAFF;
 }
 
-div.dashboardpanel {
-    /*width:200px; */
-    height:100%;
-    padding:10px;
-    float: left;
-    overflow: auto;
-}
-
-div.toprow {
-    display:table;
-    padding:5px;
-    height: auto;
-    width: 100%;
-}
-
-div.bodyrow {
-    display:block;
-    width:100%;
-    height:auto;
-}
-
-.selector_menu {
-    border: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    border-bottom: 1px solid black;
-    border-collapse: collapse;
-    cursor: pointer;
-}
-
-td.selector_menu:hover {
-    color: #0000ff;
-    border-left: 3px solid #0000aa;
-    text-decoration:underline;
-}
-
 .selectable:hover {
    background-color: #CCCCCC;
    cursor:pointer;
 }
 
-.status_success {
+.status--success {
     color: #00aa00;
     text-transform:capitalize;
 }
-.status_error {
+.status--error {
     color: #aa0000;
     text-transform:capitalize;
 }
-.status_warning {
+.status--warning {
     color: #F87217;
     text-transform:capitalize;
 }
-.status_processing {
+.status--processing {
     color: #0000aa;
     text-transform:capitalize;
 }
-.status_unknown {
+.status--unknown {
     color: #999999;
     text-transform: capitalize;
 }

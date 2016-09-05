@@ -34,7 +34,8 @@ libraryDependencies ++= Seq(
     "com.github.nscala-time" %% "nscala-time" % "2.12.0",
     "com.google.inject" % "guice" % "3.0",
     "io.argonaut" %% "argonaut" % "6.1",
-    "javax.inject" % "javax.inject" % "1"
+    "javax.inject" % "javax.inject" % "1",
+    "com.typesafe.play" %% "anorm" % "2.4.0"
 )
 
 libraryDependencies += specs2 % Test

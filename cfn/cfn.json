@@ -12,14 +12,6 @@
         "InstanceKey": {
             "Type": "String",
             "Description": "Name of a pre-created keypair to associate with any instances created"
-        },
-        "Region": {
-            "Type": "String",
-            "Description": "Amazon region where we are launching"
-        },
-        "AccountID": {
-            "Type": "String",
-            "Description": "Account ID that this is being launched in"
         }
     },
     "Metadata": {
@@ -342,8 +334,8 @@
                                                 "arn",
                                                 "aws",
                                                 "dynamodb",
-                                                {"Ref": "Region"},
-                                                {"Ref": "AccountID"},
+                                                { "Ref" : "AWS::Region" },
+                                                {"Ref": "AWS::AccountId"},
                                                 {"Fn::Join": [
                                                     "/",
                                                     [

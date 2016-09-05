@@ -7,12 +7,14 @@ dependencies:
     #decrypt encrypted credentials - https://github.com/circleci/encrypted-files/blob/master/circle.yml
     - openssl aes-256-cbc -d -in credentials.cipher -k $KEY >> ~/.circlerc
     - source ~/.circlerc
+    - npm install -g csslint
   override:
     - sbt test:compile
 
 test:
   override:
     #- sbt test
+    - csslint --ignore=unique-headings app/assets/*.css
     - exit 0 #fake successful test!
 
 deployment:

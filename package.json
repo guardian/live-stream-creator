@@ -1,0 +1,10 @@
+{
+    "name": "live-stream-creator",
+    "version": "1.0.0",
+    "devDependencies": {
+        "csslint": "1.0.2"
+    },
+    "scripts": {
+        "test": "csslint --ignore=unique-headings app/assets/*.css"
+    }
+}

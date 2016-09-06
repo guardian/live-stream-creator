@@ -12,7 +12,6 @@
         "cfn": {
             "type": "cloud-formation",
             "apps": ["live-stream-creator"],
-
         }
     },
     "recipes": {

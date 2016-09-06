@@ -9,12 +9,12 @@ dependencies:
     - source ~/.circlerc
     - npm install -g csslint
   override:
+    - npm install
     - sbt test:compile
 
 test:
   override:
-    #- sbt test
-    - csslint --ignore=unique-headings app/assets/*.css
+    - npm test
     - exit 0 #fake successful test!
 
 deployment:

@@ -1,0 +1,32 @@
+{
+    "variables": {
+        "wowza_ami": "ami-91960ce2"
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "region": "eu-west-1",
+        "source_ami": "{{user `wowza_ami`}}",
+        "instance_type": "c3.large",
+        "ssh_username": "ec2-user",
+        "ami_name": "wowza_{{isotime \"2006-01-02_15-04-05\"}}",
+        "ami_description": "Wowza Streaming Engine with Guardian settings",
+        "name": "wowza_{{isotime \"2006-01-02_15-04-05\"}}",
+        "tags": {
+            "Name": "wowza_{{isotime \"2006-01-02_15-04-05\"}}",
+            "SourceAMI": "{{user `wowza_ami`}}"
+        },
+        "launch_block_device_mappings": [{
+            "device_name": "/dev/sdb",
+            "delete_on_termination": true
+        }]
+    }],
+    "provisioners": [{
+        "type": "file",
+        "source": "config",
+        "destination": "/home/ec2-user"
+    },{
+        "type": "shell",
+        "script": "wowza-ami.sh",
+        "execute_command": "{{ .Vars }} sudo -E bash -x '{{ .Path }}'"
+    }]
+}

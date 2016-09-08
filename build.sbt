@@ -13,11 +13,12 @@ lazy val `livestreamcreator` = (project in file("."))
         topLevelDirectory in Universal := Some(normalizedName.value),
         riffRaffPackageName := s"${name.value}",
         riffRaffManifestProjectName := riffRaffPackageName.value,
-        riffRaffArtifactResources := Seq(
-            riffRaffPackageType.value -> s"packages/${name.value}/${riffRaffPackageType.value.getName}",
-            baseDirectory.value / "conf/deploy.json" -> "deploy.json"
-        ),
-        riffRaffPackageType := (packageZipTarball in Universal).value
+        riffRaffPackageType := (packageZipTarball in Universal).value,
+        riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
+        riffRaffUploadManifestBucket := Option("riffraff-builds"),
+        riffRaffBuildIdentifier := env("CIRCLE_BUILD_NUM").getOrElse("DEV"),
+        riffRaffManifestBranch := env("CIRCLE_BRANCH").getOrElse("DEV"),
+        riffRaffManifestVcsUrl := "git@github.com:guardian/live-stream-creator.git"
     )
 
 scalaVersion := "2.11.6"

@@ -1,0 +1,105 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "DEV stack for live-stream-creator",
+    "Parameters": {
+        "InstanceKey": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Description": "Name of a pre-created keypair to associate with any instances created"
+        },
+        "GuardianIP": {
+            "Type": "String",
+            "Description": "IP range for the office"
+        },
+        "WowzaAmi": {
+            "Type": "AWS::EC2::Image::Id",
+            "Description": "Wowza AMI with Guardian presets (built via Packer)"
+        }
+    },
+    "Resources" : {
+        "AutoScalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": { "Fn::GetAZs": "" },
+                "Cooldown": "300",
+                "DesiredCapacity": "1",
+                "HealthCheckType": "EC2",
+                "HealthCheckGracePeriod": 300,
+                "LaunchConfigurationName": { "Ref": "LaunchConfig" },
+                "MaxSize": "1",
+                "MinSize": "1",
+                "Tags": [
+                    { "Key": "Stage", "Value": "DEV", "PropagateAtLaunch": "true" },
+                    { "Key": "Stack", "Value": "multimedia", "PropagateAtLaunch": "true" },
+                    { "Key": "App", "Value": "wowza", "PropagateAtLaunch": "true" }
+                ]
+            }
+        },
+
+        "LaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "IamInstanceProfile": { "Ref": "InstanceProfile" },
+                "ImageId": {"Ref": "WowzaAmi"},
+                "InstanceType": "c3.large",
+                "KeyName": { "Ref": "InstanceKey" },
+                "SecurityGroups": [ {"Ref": "ServerSecurityGroup"} ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [ "", [
+                            "#!/bin/bash\n",
+                            "sed -i \"s/<DocumentationServerEnable>false<\\\/DocumentationServerEnable>/<DocumentationServerEnable>true<\\\/DocumentationServerEnable>/g\" /usr/local/WowzaStreamingEngine/conf/Server.xml\n",
+                            "service WowzaStreamingEngine restart\n"
+                        ] ]
+                    }
+                }
+            }
+        },
+
+        "InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [{ "Ref": "Role" }]
+            }
+        },
+
+        "Role": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Sid": "",
+                        "Effect": "Allow",
+                        "Principal": { "Service": "ec2.amazonaws.com" },
+                        "Action": "sts:AssumeRole"
+                    }]
+                },
+                "Path": "/"
+            }
+        },
+
+        "ServerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Wowza server",
+                "SecurityGroupIngress": [{
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "CidrIp": {"Ref": "GuardianIP"}
+                }, {
+                    "IpProtocol": "tcp",
+                    "FromPort": 8087,
+                    "ToPort": 8089,
+                    "CidrIp": {"Ref": "GuardianIP"}
+                }, {
+                    "IpProtocol": "tcp",
+                    "FromPort": 1935,
+                    "ToPort": 1935,
+                    "CidrIp": {"Ref": "GuardianIP"}
+                }]
+            }
+        }
+    }
+}

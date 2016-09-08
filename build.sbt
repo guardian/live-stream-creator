@@ -1,11 +1,8 @@
-import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport._
-import sbt.Keys._
-
 name := "live-stream-creator"
 
 version := "1.0"
 
-lazy val `livestreamcreator` = (project in file("."))
+lazy val root = (project in file("."))
     .enablePlugins(PlayScala, RiffRaffArtifact, UniversalPlugin)
     .settings(
         packageName in Universal := normalizedName.value,
@@ -27,18 +24,10 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 
-libraryDependencies += "com.google.api-client" % "google-api-client" % "1.22.0"
-
-libraryDependencies += "com.google.apis" % "google-api-services-youtube" % "v3-rev178-1.22.0"
-
 libraryDependencies ++= Seq(
-    cache,
-    ws,
-    filters,
-    jdbc,
-    anorm,
-    cache,
-    ws
+    cache, ws, filters,
+    "com.google.api-client" % "google-api-client" % "1.22.0",
+    "com.google.apis" % "google-api-services-youtube" % "v3-rev178-1.22.0"
 )
 
 def env(key: String): Option[String] = Option(System.getenv(key))

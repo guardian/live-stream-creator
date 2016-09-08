@@ -26,7 +26,7 @@
             <DocumentationServerEnable>false</DocumentationServerEnable>
             <DocumentationServerPort>8089</DocumentationServerPort>
             <!-- none, basic, digest-->
-            <DocumentationServerAuthenticationMethod>digest</DocumentationServerAuthenticationMethod>
+            <DocumentationServerAuthenticationMethod>none</DocumentationServerAuthenticationMethod>
             <Properties>
                 <Property>
                     <Name>restUserHTTPHeaders</Name>

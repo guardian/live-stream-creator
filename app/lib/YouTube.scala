@@ -131,7 +131,9 @@ case class StreamPrivacy (status: String) {
 }
 
 object PrivateStreamVisibility extends StreamPrivacy("private")
+
 object PublicStreamVisibility extends StreamPrivacy("public")
+
 object UnlistedStreamVisibility extends StreamPrivacy("unlisted")
 
 case class LifeCycleStatus (status: String) {
@@ -139,7 +141,9 @@ case class LifeCycleStatus (status: String) {
 }
 
 object TestingBroadcastStatus extends LifeCycleStatus("testing")
+
 object LiveBroadcastStatus extends LifeCycleStatus("live")
+
 object CompleteBroadcastStatus extends LifeCycleStatus("complete")
 
 object YouTubeBroadcast extends YouTubeAuth {
@@ -161,6 +165,10 @@ object YouTubeBroadcast extends YouTubeAuth {
     request.execute.getItems.asScala.toList
   }
 
+  def startMonitor(channel: Channel, broadcast: LiveBroadcast) = {
+    updateStatus(channel, broadcast, PrivateStreamVisibility, TestingBroadcastStatus)
+  }
+
   def start(channel: Channel, broadcast: LiveBroadcast) = {
     updateStatus(channel, broadcast, PublicStreamVisibility, LiveBroadcastStatus)
   }
@@ -172,26 +180,25 @@ object YouTubeBroadcast extends YouTubeAuth {
   private def updateStatus(channel: Channel, broadcast: LiveBroadcast, streamPrivacy: StreamPrivacy, lifeCycleStatus: LifeCycleStatus): Option[LiveBroadcast] = {
     val stream = YouTubeStream.get(channel, broadcast.getContentDetails.getBoundStreamId).get
 
-    YouTubeStream.isActive(stream) match {
-      case true => {
-        val status = new LiveBroadcastStatus()
-          .setPrivacyStatus(streamPrivacy.toString)
-          .setLifeCycleStatus(lifeCycleStatus.toString)
+    if (! YouTubeStream.isActive(stream)) {
+      // stream bound to broadcast has to be active before transitioning broadcast status
+      // see https://developers.google.com/youtube/v3/live/docs/liveBroadcasts/transition
+      None
+    } else {
+      val status = new LiveBroadcastStatus()
+        .setPrivacyStatus(streamPrivacy.toString)
+        .setLifeCycleStatus(lifeCycleStatus.toString)
 
-        broadcast.setStatus(status)
+      broadcast.setStatus(status)
 
-        val request = youtube.liveBroadcasts.update("status", broadcast)
+      val request = youtube.liveBroadcasts.update("status", broadcast)
 
-        if (isContentOwnerMode) {
-          request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
-            .setOnBehalfOfContentOwnerChannel(stream.getSnippet.getChannelId)
-        }
-
-        Some(request.execute)
+      if (isContentOwnerMode) {
+        request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+          .setOnBehalfOfContentOwnerChannel(stream.getSnippet.getChannelId)
       }
-      case false => {
-        None
-      }
+
+      Some(request.execute)
     }
   }
 

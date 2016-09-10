@@ -1,13 +1,12 @@
 package lib
 
-import java.net.URI
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.{DateTime => GDateTime}
 import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model._
+import lib.Config.{isContentOwnerMode, youtubeContentOwner}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
@@ -40,72 +39,63 @@ trait YouTubeAuthenticatedApi {
   }
 }
 
-case class YouTubeChannel (id: String, title: String, isContentOwnerChannel: Boolean)
-
-object YouTubeChannel {
-  def build(channel: Channel, isContentOwnerChannel: Boolean) = {
-    YouTubeChannel(channel.getId, channel.getSnippet.getTitle, isContentOwnerChannel)
-  }
-}
-
 object YouTubeChannelApi extends YouTubeAuthenticatedApi {
-  def list(contentOwner: Option[String] = None): List[YouTubeChannel] = {
-    val request = youtube.channels.list("snippet").setMaxResults(50.toLong)
+  def list(): List[Channel] = {
+    val request = youtube.channels.list("id,snippet,contentOwnerDetails").setMaxResults(50.toLong)
 
-    contentOwner match {
-      case Some(co) => request.setManagedByMe(true).setOnBehalfOfContentOwner(co)
-      case None     => request.setMine(true)
+    if (isContentOwnerMode) {
+      request.setManagedByMe(true)
+        .setOnBehalfOfContentOwner(youtubeContentOwner.get)
+    } else {
+      request.setMine(true)
     }
 
-    request.execute.getItems.asScala.toList.map(YouTubeChannel.build(_, contentOwner.isDefined))
-  }
-}
-
-case class BasicLiveStream (streamName: String, host: String, applicationName: String)
-
-object BasicLiveStream  {
-  def build(stream: LiveStream) = {
-    val ingestionInfo = stream.getCdn.getIngestionInfo
-    val ingestionAddress = new URI(ingestionInfo.getIngestionAddress)
-    BasicLiveStream (ingestionInfo.getStreamName, ingestionAddress.getHost, ingestionAddress.getPath)
+    request.execute.getItems.asScala.toList
   }
 }
 
 object YouTubeStreamApi extends YouTubeAuthenticatedApi {
-  def get(id: String): Option[LiveStream] = {
+  def get(channel: Channel, id: String): Option[LiveStream] = list(channel, Some(id)).headOption
+
+  def isActive(stream: LiveStream): Boolean = stream.getStatus.getStreamStatus == "active"
+
+  def list(channel: Channel, id: Option[String]) = {
     val request = youtube.liveStreams
       .list("id,cdn,snippet,status")
-      .setId(id)
 
-    request.execute.getItems.asScala.toList.headOption
-  }
+    if (id.isDefined) request.setId(id.get)
 
-  def isActive(id: String): Boolean = {
-    get(id) match {
-      case Some(stream) => stream.getStatus.getStreamStatus == "active"
-      case _ => false
+    if (isContentOwnerMode) {
+      request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+        .setOnBehalfOfContentOwnerChannel(channel.getId)
+    } else {
+      request.setMine(true)
     }
-  }
-
-  def list() = {
-    val request = youtube.liveStreams
-      .list("id,cdn,snippet,status")
-      .setMine(true)
 
     request.execute.getItems.asScala.toList
   }
 
-  def create(channel: YouTubeChannel, title: String) = {
-    val broadcast = YouTubeBroadcastApi.create(channel, title)
-    val stream = createStream(title)
+  def create(broadcast: LiveBroadcast) = {
+    val stream = createStream(broadcast)
 
-    youtube.liveBroadcasts
+    val request = youtube.liveBroadcasts
       .bind(broadcast.getId, "id,contentDetails")
       .setStreamId(stream.getId)
-      .execute
+
+    if (isContentOwnerMode) {
+      val channelId = broadcast.getSnippet.getChannelId
+
+      request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+        .setOnBehalfOfContentOwnerChannel(channelId)
+    }
+
+    request.execute
   }
 
-  private def createStream(title: String): LiveStream = {
+  private def createStream(broadcast: LiveBroadcast): LiveStream = {
+    val title = broadcast.getSnippet.getTitle
+    val channelId = broadcast.getSnippet.getChannelId
+
     val snippet = new LiveStreamSnippet()
       .setTitle(title)
 
@@ -118,16 +108,22 @@ object YouTubeStreamApi extends YouTubeAuthenticatedApi {
       .setSnippet(snippet)
       .setCdn(cdnSettings)
 
-    youtube.liveStreams()
+    val request = youtube.liveStreams()
       .insert("cdn,snippet", stream)
-      .execute()
+
+    if (isContentOwnerMode) {
+      request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+        .setOnBehalfOfContentOwnerChannel(channelId)
+    }
+
+    request.execute()
   }
 }
 
 case class StreamPrivacy (status: String) {
   override def toString: String = status
-
 }
+
 object PrivateStreamVisibility extends StreamPrivacy("private")
 object PublicStreamVisibility extends StreamPrivacy("public")
 object UnlistedStreamVisibility extends StreamPrivacy("unlisted")
@@ -135,37 +131,42 @@ object UnlistedStreamVisibility extends StreamPrivacy("unlisted")
 case class LifeCycleStatus (status: String) {
   override def toString: String = status
 }
+
 object TestingBroadcastStatus extends LifeCycleStatus("testing")
 object LiveBroadcastStatus extends LifeCycleStatus("live")
 object CompleteBroadcastStatus extends LifeCycleStatus("complete")
 
 object YouTubeBroadcastApi extends YouTubeAuthenticatedApi {
-  def get(id: String): Option[LiveBroadcast] = {
+  def get(channel: Channel, id: String): Option[LiveBroadcast] = list(channel, Some(id)).headOption
+
+  def list(channel: Channel, id: Option[String]) = {
     val request = youtube.liveBroadcasts
       .list("id,snippet,contentDetails,status")
-      .setId(id)
 
-    request.execute.getItems.asScala.toList.headOption
-  }
+    if (id.isDefined) request.setId(id.get)
 
-  def list() = {
-    val request = youtube.liveBroadcasts
-      .list("id,snippet,contentDetails,status")
-      .setMine(true)
+    if (isContentOwnerMode) {
+      request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+        .setOnBehalfOfContentOwnerChannel(channel.getId)
+    } else {
+      request.setMine(true)
+    }
 
     request.execute.getItems.asScala.toList
   }
 
-  def start(broadcast: LiveBroadcast) = {
-    updateStatus(broadcast, PublicStreamVisibility, LiveBroadcastStatus)
+  def start(channel: Channel, broadcast: LiveBroadcast) = {
+    updateStatus(channel, broadcast, PublicStreamVisibility, LiveBroadcastStatus)
   }
 
-  def stop(broadcast: LiveBroadcast) = {
-    updateStatus(broadcast, UnlistedStreamVisibility, CompleteBroadcastStatus)
+  def stop(channel: Channel, broadcast: LiveBroadcast) = {
+    updateStatus(channel, broadcast, UnlistedStreamVisibility, CompleteBroadcastStatus)
   }
 
-  private def updateStatus(broadcast: LiveBroadcast, streamPrivacy: StreamPrivacy, lifeCycleStatus: LifeCycleStatus): Option[LiveBroadcast] = {
-    YouTubeStreamApi.isActive(broadcast.getContentDetails.getBoundStreamId) match {
+  private def updateStatus(channel: Channel, broadcast: LiveBroadcast, streamPrivacy: StreamPrivacy, lifeCycleStatus: LifeCycleStatus): Option[LiveBroadcast] = {
+    val stream = YouTubeStreamApi.get(channel, broadcast.getContentDetails.getBoundStreamId).get
+
+    YouTubeStreamApi.isActive(stream) match {
       case true => {
         val status = new LiveBroadcastStatus()
           .setPrivacyStatus(streamPrivacy.toString)
@@ -175,20 +176,27 @@ object YouTubeBroadcastApi extends YouTubeAuthenticatedApi {
 
         val request = youtube.liveBroadcasts.update("status", broadcast)
 
+        if (isContentOwnerMode) {
+          request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+            .setOnBehalfOfContentOwnerChannel(stream.getSnippet.getChannelId)
+        }
+
         Some(request.execute)
       }
-      case false => None
+      case false => {
+        None
+      }
     }
   }
 
-  def create(channel: YouTubeChannel, title: String) = {
+  def create(channel: Channel, title: String) = {
     val snippet = new LiveBroadcastSnippet()
       .setTitle(title)
       .setScheduledStartTime(YouTubeDateTime.now())
-      .setChannelId(channel.id)
+      .setChannelId(channel.getId)
 
     val status = new LiveBroadcastStatus()
-      .setPrivacyStatus(PrivateStreamVisibility.toString) // make stream private by default
+      .setPrivacyStatus(PrivateStreamVisibility.toString) // make private by default
 
     val contentDetails = new LiveBroadcastContentDetails()
       .setEnableEmbed(true)
@@ -199,8 +207,14 @@ object YouTubeBroadcastApi extends YouTubeAuthenticatedApi {
       .setStatus(status)
       .setContentDetails(contentDetails)
 
-    youtube.liveBroadcasts()
+    val request = youtube.liveBroadcasts()
       .insert("snippet,status", broadcast)
-      .execute()
+
+    if (isContentOwnerMode) {
+      request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+        .setOnBehalfOfContentOwnerChannel(channel.getId)
+    }
+
+    request.execute
   }
 }

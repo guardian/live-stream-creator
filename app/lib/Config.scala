@@ -14,6 +14,8 @@ object Config {
 
   val youtubeContentOwner: Option[String] = properties.get("youtube.contentOwner").filterNot(_.isEmpty)
 
+  val isContentOwnerMode = youtubeContentOwner.isDefined
+
   implicit val stage : String = {
     try {
       val stageFile = Source.fromFile("/etc/gu/stage")

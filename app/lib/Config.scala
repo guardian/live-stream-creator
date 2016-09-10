@@ -16,6 +16,8 @@ object Config {
 
   val isContentOwnerMode = youtubeContentOwner.isDefined
 
+  val youtubeAppName = "gu-live-stream-creator"
+
   implicit val stage : String = {
     try {
       val stageFile = Source.fromFile("/etc/gu/stage")

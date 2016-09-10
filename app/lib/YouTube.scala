@@ -19,7 +19,7 @@ object YouTubeDateTime {
   }
 }
 
-trait YouTubeAuthenticatedApi {
+trait YouTubeAuth {
   private val httpTransport = new NetHttpTransport()
   private val jacksonFactory = new JacksonFactory()
 
@@ -34,14 +34,20 @@ trait YouTubeAuthenticatedApi {
 
   implicit val youtube = {
     new YouTube.Builder(httpTransport, jacksonFactory, credentials)
-      .setApplicationName("live-stream-creator")
+      .setApplicationName(Config.youtubeAppName)
       .build
   }
 }
 
-object YouTubeChannelApi extends YouTubeAuthenticatedApi {
-  def list(): List[Channel] = {
-    val request = youtube.channels.list("id,snippet,contentOwnerDetails").setMaxResults(50.toLong)
+object YouTubeChannel extends YouTubeAuth {
+  def get(id: String): Option[Channel] = list(Some(id)).headOption
+
+  def list(id: Option[String]): List[Channel] = {
+    val request = youtube.channels
+      .list("id,snippet,contentOwnerDetails")
+      .setMaxResults(50.toLong)
+
+    if (id.isDefined) request.setId(id.get)
 
     if (isContentOwnerMode) {
       request.setManagedByMe(true)
@@ -54,7 +60,7 @@ object YouTubeChannelApi extends YouTubeAuthenticatedApi {
   }
 }
 
-object YouTubeStreamApi extends YouTubeAuthenticatedApi {
+object YouTubeStream extends YouTubeAuth {
   def get(channel: Channel, id: String): Option[LiveStream] = list(channel, Some(id)).headOption
 
   def isActive(stream: LiveStream): Boolean = stream.getStatus.getStreamStatus == "active"
@@ -136,7 +142,7 @@ object TestingBroadcastStatus extends LifeCycleStatus("testing")
 object LiveBroadcastStatus extends LifeCycleStatus("live")
 object CompleteBroadcastStatus extends LifeCycleStatus("complete")
 
-object YouTubeBroadcastApi extends YouTubeAuthenticatedApi {
+object YouTubeBroadcast extends YouTubeAuth {
   def get(channel: Channel, id: String): Option[LiveBroadcast] = list(channel, Some(id)).headOption
 
   def list(channel: Channel, id: Option[String]) = {
@@ -164,9 +170,9 @@ object YouTubeBroadcastApi extends YouTubeAuthenticatedApi {
   }
 
   private def updateStatus(channel: Channel, broadcast: LiveBroadcast, streamPrivacy: StreamPrivacy, lifeCycleStatus: LifeCycleStatus): Option[LiveBroadcast] = {
-    val stream = YouTubeStreamApi.get(channel, broadcast.getContentDetails.getBoundStreamId).get
+    val stream = YouTubeStream.get(channel, broadcast.getContentDetails.getBoundStreamId).get
 
-    YouTubeStreamApi.isActive(stream) match {
+    YouTubeStream.isActive(stream) match {
       case true => {
         val status = new LiveBroadcastStatus()
           .setPrivacyStatus(streamPrivacy.toString)

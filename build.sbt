@@ -27,7 +27,8 @@ unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/
 libraryDependencies ++= Seq(
     cache, ws, filters,
     "com.google.api-client" % "google-api-client" % "1.22.0",
-    "com.google.apis" % "google-api-services-youtube" % "v3-rev178-1.22.0"
+    "com.google.apis" % "google-api-services-youtube" % "v3-rev178-1.22.0",
+    "org.scalaj" %% "scalaj-http" % "2.3.0"
 )
 
 def env(key: String): Option[String] = Option(System.getenv(key))

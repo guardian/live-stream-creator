@@ -7,13 +7,14 @@ import com.google.api.services.youtube.model.LiveStream
 case class YouTubeLiveStream (
   streamName: String,
   host: String,
-  applicationName: String
+  applicationName: String,
+  title: String
 )
 
 object YouTubeLiveStream {
   def build(stream: LiveStream) = {
     val ingestionInfo = stream.getCdn.getIngestionInfo
     val ingestionAddress = new URI(ingestionInfo.getIngestionAddress)
-    YouTubeLiveStream(ingestionInfo.getStreamName, ingestionAddress.getHost, ingestionAddress.getPath)
+    YouTubeLiveStream(ingestionInfo.getStreamName, ingestionAddress.getHost, ingestionAddress.getPath, stream.getSnippet.getTitle)
   }
 }

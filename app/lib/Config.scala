@@ -35,4 +35,11 @@ object Config {
   val wowzaApiPort = properties.getOrElse("wowza.port", "8087").toInt
 
   val wowzaApplication = "live" // TODO dynamically look this up via the wowza API
+
+  val protocol = stage match {
+    case "DEV" => "http"
+    case _ => "https"
+  }
+
+  val domainRoot = s"$protocol://${properties("domain.root")}"
 }

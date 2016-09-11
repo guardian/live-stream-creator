@@ -11,6 +11,8 @@ import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
 import scala.collection.JavaConverters._
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object YouTubeDateTime {
   def now(): GDateTime = {
@@ -40,9 +42,9 @@ trait YouTubeAuth {
 }
 
 object YouTubeChannel extends YouTubeAuth {
-  def get(id: String): Option[Channel] = list(Some(id)).headOption
+  def get(id: String): Future[Option[Channel]] = list(Some(id)).map(_.headOption)
 
-  def list(id: Option[String] = None): List[Channel] = {
+  def list(id: Option[String] = None): Future[List[Channel]] = Future {
     val request = youtube.channels
       .list("id,snippet,contentOwnerDetails")
       .setMaxResults(50.toLong)

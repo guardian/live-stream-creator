@@ -2,81 +2,12 @@ package lib
 
 import java.net.URI
 
-import models.YouTubeLiveStream
+import models._
 import play.api.libs.json._
-import play.api.libs.json.Reads._
-import play.api.libs.functional.syntax._
 
+import scala.concurrent.Future
 import scalaj.http._
-
-case class IncomingStream (
-  name: String,
-  source: String
-)
-
-object IncomingStream {
-  implicit val incomingStreamReads: Reads[IncomingStream] = (
-    (__ \ "name").read[String] ~
-    (__ \ "sourceIp").read[String]
-  )(IncomingStream.apply _)
-}
-
-case class OutgoingStream (
-  entryName: String,
-  sourceStreamName: String,
-  streamName: String,
-  host: String,
-  application: String,
-  enabled: Boolean,
-  destinationName: Option[String],
-  profile: String = "rtmp",
-  port: Int = 1935
-)
-
-object OutgoingStream {
-  implicit val outgoingStreamReads: Reads[OutgoingStream] = (
-    (__ \ "entryName").read[String] ~
-    (__ \ "sourceStreamName").read[String] ~
-    (__ \ "streamName").read[String] ~
-    (__ \ "host").read[String] ~
-    (__ \ "application").read[String] ~
-    (__ \ "enabled").read[Boolean] ~
-    (__ \\ "destinationName").readNullable[String] ~
-    (__ \ "profile").read[String] ~
-    (__ \ "port").read[Int]
-  )(OutgoingStream.apply _)
-
-  implicit val outgoingStreamWrites: Writes[OutgoingStream] = (
-    (__ \ "entryName").write[String] ~
-    (__ \ "sourceStreamName").write[String] ~
-    (__ \ "streamName").write[String] ~
-    (__ \ "host").write[String] ~
-    (__ \ "application").write[String] ~
-    (__ \ "enabled").write[Boolean] ~
-    (__ \ "extraOptions" \ "destinationName").writeNullable[String] ~
-    (__ \ "profile").write[String] ~
-    (__ \ "port").write[Int]
-  )(unlift(OutgoingStream.unapply))
-
-  def build (incomingStream: IncomingStream, youtubeLiveStream: YouTubeLiveStream) = {
-    OutgoingStream(
-      youtubeLiveStream.title,
-      incomingStream.name,
-      youtubeLiveStream.streamName,
-      youtubeLiveStream.host,
-      youtubeLiveStream.applicationName,
-      enabled = true,
-      Some("youtube")
-    )
-  }
-}
-
-case class HttpMethod(verb: String) {
-  override def toString: String = verb
-}
-object GET extends HttpMethod("GET")
-object POST extends HttpMethod("POST")
-object DELETE extends HttpMethod("DELETE")
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Request {
   private def response(httpRequest: HttpRequest) = {
@@ -124,7 +55,7 @@ object Request {
 }
 
 object WowzaIncomingStream {
-  def list(appName: String) = {
+  def list(appName: String): Future[List[IncomingStream]] = Future {
     val path = Request.getBasePath(appName, "instances/_definst_")
     val response = Request.get(path)
 
@@ -133,7 +64,7 @@ object WowzaIncomingStream {
 }
 
 object WowzaOutgoingStream {
-  def list(appName: String) = {
+  def list(appName: String): Future[List[OutgoingStream]] = Future {
     val path = Request.getBasePath(appName, "pushpublish/mapentries")
     val response = Request.get(path)
 

@@ -42,7 +42,7 @@ trait YouTubeAuth {
 object YouTubeChannel extends YouTubeAuth {
   def get(id: String): Option[Channel] = list(Some(id)).headOption
 
-  def list(id: Option[String]): List[Channel] = {
+  def list(id: Option[String] = None): List[Channel] = {
     val request = youtube.channels
       .list("id,snippet,contentOwnerDetails")
       .setMaxResults(50.toLong)
@@ -53,7 +53,7 @@ object YouTubeChannel extends YouTubeAuth {
       request.setManagedByMe(true)
         .setOnBehalfOfContentOwner(youtubeContentOwner.get)
     } else {
-      request.setMine(true)
+      if (id.isEmpty) request.setMine(true)
     }
 
     request.execute.getItems.asScala.toList
@@ -65,7 +65,7 @@ object YouTubeStream extends YouTubeAuth {
 
   def isActive(stream: LiveStream): Boolean = stream.getStatus.getStreamStatus == "active"
 
-  def list(channel: Channel, id: Option[String]) = {
+  def list(channel: Channel, id: Option[String] = None) = {
     val request = youtube.liveStreams
       .list("id,cdn,snippet,status")
 
@@ -75,7 +75,7 @@ object YouTubeStream extends YouTubeAuth {
       request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
         .setOnBehalfOfContentOwnerChannel(channel.getId)
     } else {
-      request.setMine(true)
+      if (id.isEmpty) request.setMine(true)
     }
 
     request.execute.getItems.asScala.toList
@@ -149,7 +149,7 @@ object CompleteBroadcastStatus extends LifeCycleStatus("complete")
 object YouTubeBroadcast extends YouTubeAuth {
   def get(channel: Channel, id: String): Option[LiveBroadcast] = list(channel, Some(id)).headOption
 
-  def list(channel: Channel, id: Option[String]) = {
+  def list(channel: Channel, id: Option[String] = None) = {
     val request = youtube.liveBroadcasts
       .list("id,snippet,contentDetails,status")
 
@@ -159,7 +159,7 @@ object YouTubeBroadcast extends YouTubeAuth {
       request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
         .setOnBehalfOfContentOwnerChannel(channel.getId)
     } else {
-      request.setMine(true)
+      if (id.isEmpty) request.setMine(true)
     }
 
     request.execute.getItems.asScala.toList
@@ -211,8 +211,11 @@ object YouTubeBroadcast extends YouTubeAuth {
     val status = new LiveBroadcastStatus()
       .setPrivacyStatus(PrivateStreamVisibility.toString) // make private by default
 
+    val monitorStreamInfo = new MonitorStreamInfo()
+      .setEnableMonitorStream(true)
+
     val contentDetails = new LiveBroadcastContentDetails()
-      .setEnableEmbed(true)
+      .setMonitorStream(monitorStreamInfo)
 
     val broadcast = new LiveBroadcast()
       .setKind("youtube#liveBroadcast")
@@ -221,7 +224,7 @@ object YouTubeBroadcast extends YouTubeAuth {
       .setContentDetails(contentDetails)
 
     val request = youtube.liveBroadcasts()
-      .insert("snippet,status", broadcast)
+      .insert("snippet,status,contentDetails", broadcast)
 
     if (isContentOwnerMode) {
       request.setOnBehalfOfContentOwner(youtubeContentOwner.get)

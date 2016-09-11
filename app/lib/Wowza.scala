@@ -31,19 +31,7 @@ case class OutgoingStream (
   destinationName: Option[String],
   profile: String = "rtmp",
   port: Int = 1935
-) {
-  def build (incomingStream: IncomingStream, youtubeLiveStream: YouTubeLiveStream) = {
-    OutgoingStream(
-      youtubeLiveStream.title,
-      incomingStream.name,
-      youtubeLiveStream.streamName,
-      youtubeLiveStream.host,
-      youtubeLiveStream.applicationName,
-      enabled = true,
-      Some("youtube")
-    )
-  }
-}
+)
 
 object OutgoingStream {
   implicit val outgoingStreamReads: Reads[OutgoingStream] = (
@@ -69,6 +57,18 @@ object OutgoingStream {
     (__ \ "profile").write[String] ~
     (__ \ "port").write[Int]
   )(unlift(OutgoingStream.unapply))
+
+  def build (incomingStream: IncomingStream, youtubeLiveStream: YouTubeLiveStream) = {
+    OutgoingStream(
+      youtubeLiveStream.title,
+      incomingStream.name,
+      youtubeLiveStream.streamName,
+      youtubeLiveStream.host,
+      youtubeLiveStream.applicationName,
+      enabled = true,
+      Some("youtube")
+    )
+  }
 }
 
 case class HttpMethod(verb: String) {
@@ -141,12 +141,12 @@ object WowzaOutgoingStream {
   }
 
   def create(appName: String, profile: OutgoingStream) = {
-    val path = Request.getBasePath(appName, s"pushpublish/mapentries/${profile.entryName}")
+    val path = Request.getBasePath(appName, s"pushpublish/mapentries/${profile.entryName.replace(" ", "")}")
     Request.post(path, Json.toJson(profile))
   }
 
   def delete(appName: String, profile: OutgoingStream) = {
-    val path = Request.getBasePath(appName, s"pushpublish/mapentries/${profile.entryName}")
+    val path = Request.getBasePath(appName, s"pushpublish/mapentries/${profile.entryName.replace(" ", "")}")
     Request.delete(path)
   }
 }

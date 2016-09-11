@@ -1,6 +1,14 @@
 machine:
-  timezone:
-    Europe/London
+  timezone: UTC
+  java:
+    version: oraclejdk8
+  node:
+    version: 6.3.0
+
+# Collect build artifacts
+general:
+  artifacts:
+    - target/riffraff
 
 dependencies:
   pre:
@@ -8,6 +16,11 @@ dependencies:
     - openssl aes-256-cbc -d -in credentials.cipher -k $KEY >> ~/.circlerc
     - source ~/.circlerc
   cache_directories:
+    - "~/.sbt"
+    - "target/resolution-cache"
+    - "target/streams"
+    - "project/target/resolution-cache"
+    - "project/target/streams"
     - "node_modules"
   override:
     - npm install
@@ -19,7 +32,7 @@ test:
     - exit 0 #fake successful test!
 
 deployment:
-  riffraf:
+  riffraff:
     branch: /.*/    #match all branches
     commands:
       - sbt riffRaffUpload

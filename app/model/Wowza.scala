@@ -1,26 +1,26 @@
-package models
+package model
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class IncomingStream (
+case class WowzaIncomingStream(
   name: String,
   source: String
 )
 
-object IncomingStream {
-  implicit val incomingStreamReads: Reads[IncomingStream] = (
+object WowzaIncomingStream {
+  implicit val incomingStreamReads: Reads[WowzaIncomingStream] = (
     (__ \ "name").read[String] ~
     (__ \ "sourceIp").read[String]
-  )(IncomingStream.apply _)
+  )(WowzaIncomingStream.apply _)
 
-  implicit val incomingStreamWrites: Writes[IncomingStream] = (
+  implicit val incomingStreamWrites: Writes[WowzaIncomingStream] = (
     (__ \ "name").write[String] ~
     (__ \ "sourceIp").write[String]
-  )(unlift(IncomingStream.unapply))
+  )(unlift(WowzaIncomingStream.unapply))
 }
 
-case class OutgoingStream (
+case class WowzaOutgoingStream(
   entryName: String,
   sourceStreamName: String,
   streamName: String,
@@ -30,10 +30,26 @@ case class OutgoingStream (
   destinationName: Option[String],
   profile: String = "rtmp",
   port: Int = 1935
-)
+) {
+  def safeEntryName = entryName.replace(" ", "")
 
-object OutgoingStream {
-  implicit val outgoingStreamReads: Reads[OutgoingStream] = (
+  def toggleEnabled(newEnabledState: Boolean) = {
+    WowzaOutgoingStream (
+      entryName,
+      sourceStreamName,
+      streamName,
+      host,
+      application,
+      newEnabledState,
+      destinationName,
+      profile,
+      port
+    )
+  }
+}
+
+object WowzaOutgoingStream {
+  implicit val outgoingStreamReads: Reads[WowzaOutgoingStream] = (
     (__ \ "entryName").read[String] ~
     (__ \ "sourceStreamName").read[String] ~
     (__ \ "streamName").read[String] ~
@@ -43,9 +59,9 @@ object OutgoingStream {
     (__ \\ "destinationName").readNullable[String] ~
     (__ \ "profile").read[String] ~
     (__ \ "port").read[Int]
-  )(OutgoingStream.apply _)
+  )(WowzaOutgoingStream.apply _)
 
-  implicit val outgoingStreamWrites: Writes[OutgoingStream] = (
+  implicit val outgoingStreamWrites: Writes[WowzaOutgoingStream] = (
     (__ \ "entryName").write[String] ~
     (__ \ "sourceStreamName").write[String] ~
     (__ \ "streamName").write[String] ~
@@ -55,16 +71,16 @@ object OutgoingStream {
     (__ \ "extraOptions" \ "destinationName").writeNullable[String] ~
     (__ \ "profile").write[String] ~
     (__ \ "port").write[Int]
-  )(unlift(OutgoingStream.unapply))
+  )(unlift(WowzaOutgoingStream.unapply))
 
-  def build (incomingStream: IncomingStream, youtubeLiveStream: YTLiveStream) = {
-    OutgoingStream(
+  def build (incomingStream: WowzaIncomingStream, youtubeLiveStream: YouTubeLiveStream, enabled: Boolean) = {
+    WowzaOutgoingStream(
       youtubeLiveStream.title,
       incomingStream.name,
       youtubeLiveStream.streamName,
       youtubeLiveStream.host,
       youtubeLiveStream.applicationName,
-      enabled = true,
+      enabled,
       Some("youtube")
     )
   }

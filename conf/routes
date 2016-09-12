@@ -5,11 +5,12 @@
 # Home page
 GET     /                                   controllers.Application.index
 
-GET     /wowza/incoming/list/:appName       controllers.WowzaIncomingController.list(appName: String)
-GET     /wowza/outgoing/list/:appName       controllers.WowzaOutgoingController.list(appName: String)
 
-GET     /youtube/channel/list               controllers.YouTubeChannelController.list
-GET     /youtube/channel/:channelId         controllers.YouTubeChannelController.get(channelId: String)
+# API
+GET     /api/wowza/incoming/list/:appName       controllers.WowzaIncomingController.list(appName: String)
+GET     /api/wowza/outgoing/list/:appName       controllers.WowzaOutgoingController.list(appName: String)
+GET     /api/youtube/channel/list               controllers.YouTubeChannelController.list()
+GET     /api/youtube/channel/:channelId         controllers.YouTubeChannelController.get(channelId: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                       controllers.Assets.at(path="/public", file)

@@ -1,4 +1,4 @@
-package models
+package model
 
 import java.net.URI
 
@@ -8,45 +8,62 @@ import play.api.libs.json._
 
 import scala.util.Try
 
-case class YTLiveStream (
+case class YouTubeLiveStreamRequest(
+  title: String,
+  channel: String,
+  wowzaStream: String
+)
+
+object YouTubeLiveStreamRequest {
+  implicit val reads: Reads[YouTubeLiveStreamRequest] = Json.reads[YouTubeLiveStreamRequest]
+  implicit val writes: Writes[YouTubeLiveStreamRequest] = Json.writes[YouTubeLiveStreamRequest]
+}
+
+case class YouTubeLiveStream(
   streamName: String,
   host: String,
   applicationName: String,
   title: String
 )
 
-object YTLiveStream {
+object YouTubeLiveStream {
   def build(stream: LiveStream) = {
     val ingestionInfo = stream.getCdn.getIngestionInfo
     val ingestionAddress = new URI(ingestionInfo.getIngestionAddress)
-    YTLiveStream(ingestionInfo.getStreamName, ingestionAddress.getHost, ingestionAddress.getPath, stream.getSnippet.getTitle)
+
+    YouTubeLiveStream(
+      ingestionInfo.getStreamName,
+      ingestionAddress.getHost,
+      ingestionAddress.getPath,
+      stream.getSnippet.getTitle
+    )
   }
 }
 
-case class YTChannel (
+case class YouTubeChannel(
   id: String,
   title: String,
   thumbnail: URI,
   contentOwner: Option[String]
 )
 
-object YTChannel {
-  implicit val reads: Reads[YTChannel] = (
+object YouTubeChannel {
+  implicit val reads: Reads[YouTubeChannel] = (
     (__ \ "id").read[String] ~
     (__ \ "title").read[String] ~
     (__ \ "thumbnail").read[String].map(URI.create) ~
     (__ \ "contentOwner").readNullable[String]
-  )(YTChannel.apply _)
+  )(YouTubeChannel.apply _)
 
-  implicit val writes: Writes[YTChannel] = (
+  implicit val writes: Writes[YouTubeChannel] = (
     (__ \ "id").write[String] ~
     (__ \ "title").write[String] ~
     (__ \ "thumbnail").write[String].contramap((_: URI).toString) ~
     (__ \ "contentOwner").writeNullable[String]
-  )(unlift(YTChannel.unapply))
+  )(unlift(YouTubeChannel.unapply))
 
   def build(channel: Channel) = {
-    YTChannel(
+    YouTubeChannel(
       channel.getId,
       channel.getSnippet.getTitle,
       URI.create(channel.getSnippet.getThumbnails.getDefault.getUrl),

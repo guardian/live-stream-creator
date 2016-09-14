@@ -11,6 +11,7 @@ import scala.util.Try
 case class YouTubeLiveStreamRequest(
   title: String,
   channel: String,
+  wowzaApp: String,
   wowzaStream: String
 )
 
@@ -27,6 +28,9 @@ case class YouTubeLiveStream(
 )
 
 object YouTubeLiveStream {
+  implicit val reads: Reads[YouTubeLiveStream] = Json.reads[YouTubeLiveStream]
+  implicit val writes: Writes[YouTubeLiveStream] = Json.writes[YouTubeLiveStream]
+
   def build(stream: LiveStream) = {
     val ingestionInfo = stream.getCdn.getIngestionInfo
     val ingestionAddress = new URI(ingestionInfo.getIngestionAddress)

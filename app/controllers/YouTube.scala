@@ -2,15 +2,16 @@ package controllers
 
 import java.net.URI
 
-import com.google.api.services.youtube.model.{Channel, LiveBroadcast}
+import com.google.api.services.youtube.model.{Channel, LiveBroadcast, LiveStream}
 import lib.argo.ArgoHelpers
 import lib._
 import lib.argo.model.EntityResponse
-import model.YouTubeChannel
+import model.{YouTubeChannel, YouTubeLiveStream, YouTubeLiveStreamRequest}
 import models._
 import play.api.mvc.{Action, Controller, Result}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object YouTubeChannelController extends Controller with ArgoHelpers {
   private def wrapChannel(channel: Channel): EntityResponse[YouTubeChannel] = {
@@ -44,5 +45,19 @@ object YouTubeChannelController extends Controller with ArgoHelpers {
         }
       }
     })
+  }
+}
+
+object YouTubeLiveStreamController extends Controller with ArgoHelpers {
+  def create() = Action.async(parse.json){ request =>
+    (request.body \ "data").asOpt[YouTubeLiveStreamRequest] match {
+      case Some(streamRequest) => {
+        LiveStreamCreator.create(streamRequest).map { (foo: LiveStream) => {
+          val bar: YouTubeLiveStream = YouTubeLiveStream.build(foo)
+          respond[EntityResponse[YouTubeLiveStream]](EntityResponse(data = bar))
+        }}
+      }
+      case None => Future(respondError(BadRequest, "meep", "cannot deseralize request"))
+    }
   }
 }

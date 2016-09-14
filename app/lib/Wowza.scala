@@ -17,8 +17,8 @@ trait WowzaApi {
 }
 
 object WowzaIncomingStreamApi extends WowzaApi {
-  def get(appName: String): Future[Option[WowzaIncomingStream]] = Future {
-    val path = getBasePath(appName, s"instances/_definst_/incomingstreams/$appName")
+  def get(appName: String, streamName: String): Future[Option[WowzaIncomingStream]] = Future {
+    val path = getBasePath(appName, s"instances/_definst_/incomingstreams/$streamName")
     Request.get(path).map(json => Some(json.as[WowzaIncomingStream])).getOrElse(None)
   }
 

@@ -1,0 +1,17 @@
+<form ng-submit="ctrl.submit()">
+    <select name="wowzaStream" id="wowzaStream" ng-model="formData.wowzaStream">
+        <option ng-repeat="option in ctrl.wowzaStreams.data" value="{{option.data.name}}">{{option.data.name}}</option>
+    </select>
+
+    <select name="channel" id="channel" ng-model="formData.channel">
+        <option ng-repeat="option in ctrl.channels.data" value="{{option.data.id}}">{{option.data.title}}</option>
+    </select>
+
+    <input type="hidden" value="live" ng-model="formData.wowzaApp" />
+
+    <input type="text" name="title" ng-model="formData.title" />
+
+    <input type="submit" id="submit" value="submit" />
+</form>
+
+

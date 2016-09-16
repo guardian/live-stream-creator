@@ -1,24 +1,10 @@
 package model
 
+import java.net.URI
+
+import com.google.api.services.youtube.model.LiveStream
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-
-case class WowzaIncomingStream(
-  name: String,
-  source: String
-)
-
-object WowzaIncomingStream {
-  implicit val incomingStreamReads: Reads[WowzaIncomingStream] = (
-    (__ \ "name").read[String] ~
-    (__ \ "sourceIp").read[String]
-  )(WowzaIncomingStream.apply _)
-
-  implicit val incomingStreamWrites: Writes[WowzaIncomingStream] = (
-    (__ \ "name").write[String] ~
-    (__ \ "sourceIp").write[String]
-  )(unlift(WowzaIncomingStream.unapply))
-}
 
 case class WowzaOutgoingStream(
   entryName: String,
@@ -73,13 +59,17 @@ object WowzaOutgoingStream {
     (__ \ "port").write[Int]
   )(unlift(WowzaOutgoingStream.unapply))
 
-  def build (incomingStream: WowzaIncomingStream, youtubeLiveStream: YouTubeLiveStream, enabled: Boolean) = {
+  def build (incomingStream: WowzaIncomingStream, liveStream: LiveStream, enabled: Boolean) = {
+    val title = liveStream.getSnippet.getTitle
+    val ingestionInfo = liveStream.getCdn.getIngestionInfo
+    val ingestionAddress = new URI(ingestionInfo.getIngestionAddress)
+
     WowzaOutgoingStream(
-      youtubeLiveStream.title,
+      title,
       incomingStream.name,
-      youtubeLiveStream.streamName,
-      youtubeLiveStream.host,
-      youtubeLiveStream.applicationName,
+      ingestionInfo.getStreamName,
+      ingestionAddress.getHost,
+      ingestionAddress.getPath,
       enabled,
       Some("youtube")
     )

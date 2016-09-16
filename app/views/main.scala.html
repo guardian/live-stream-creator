@@ -1,4 +1,6 @@
-@()
+@import java.net.URI
+
+@(apiUri: URI)
 
 <!DOCTYPE html>
 
@@ -7,6 +9,7 @@
         <title>Live Stream Creator</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="api-uri" href="@apiUri.toString">
     </head>
     <body>
         <script src="@routes.Assets.at("jspm_packages/system.js")"></script>
@@ -17,6 +20,6 @@
             });
         </script>
 
-        <test-dir></test-dir>
+        <lv-app></lv-app>
     </body>
 </html>

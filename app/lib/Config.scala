@@ -1,6 +1,13 @@
 package lib
 
 import java.io.FileNotFoundException
+import java.net.URI
+
+import com.amazonaws.auth.{AWSCredentialsProviderChain, InstanceProfileCredentialsProvider}
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.regions.{RegionUtils, Regions}
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
+
 import scala.io.Source
 
 object Config {
@@ -36,10 +43,19 @@ object Config {
 
   val wowzaApplication = "live" // TODO dynamically look this up via the wowza API
 
-  val protocol = stage match {
-    case "DEV" => "http"
-    case _ => "https"
+  val domainRoot = stage match {
+    case "DEV" => "http://localhost:9000" // TODO be better!
+    case _ => s"https://${properties("domain.root")}"
   }
 
-  val domainRoot = s"$protocol://${properties("domain.root")}"
+  val apiUri = URI.create(s"$domainRoot/api")
+
+  val awsRegion = RegionUtils.getRegion(properties.getOrElse("aws.region", Regions.EU_WEST_1.getName))
+
+  val awsCredentialsProviderChain = new AWSCredentialsProviderChain(
+    new ProfileCredentialsProvider(properties.getOrElse("aws.profile", "multimedia")),
+    new InstanceProfileCredentialsProvider()
+  )
+
+  val dynamoTableName = properties("aws.dynamo.table")
 }

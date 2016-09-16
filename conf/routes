@@ -3,18 +3,21 @@
 # ~~~~
 
 # Home page
-GET     /                                   controllers.Application.index
+GET     /                                controllers.Application.index
 
 
 # API
-GET     /api/wowza/incoming/list/:appName       controllers.WowzaIncomingController.list(appName: String)
-GET     /api/wowza/outgoing/list/:appName       controllers.WowzaOutgoingController.list(appName: String)
-GET     /api/youtube/channel/list               controllers.YouTubeChannelController.list()
-GET     /api/youtube/channel/:channelId         controllers.YouTubeChannelController.get(channelId: String)
+GET     /api                            controllers.ApiController.index()
+GET     /api/streams                    controllers.LiveStreamController.list()
+POST    /api/streams                    controllers.LiveStreamController.create()
+GET     /api/stream/:streamId           controllers.LiveStreamController.get(streamId: String)
+GET     /api/stream/:streamId/health    controllers.LiveStreamController.getHealthStatus(streamId: String)
+PUT     /api/stream/:streamId/monitor   controllers.LiveStreamController.updateMonitor(streamId: String)
 
-POST    /api/youtube/stream/create              controllers.YouTubeLiveStreamController.create()
+GET     /api/incoming/:appName          controllers.WowzaIncomingController.list(appName: String)
+GET     /api/outgoing/youtube           controllers.YouTubeChannelController.list()
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                           controllers.Assets.at(path="/public", file)
+GET     /assets/*file                   controllers.Assets.at(path="/public", file)
 
-GET     /healthcheck                            controllers.Management.healthcheck
+GET     /healthcheck                    controllers.Management.healthcheck

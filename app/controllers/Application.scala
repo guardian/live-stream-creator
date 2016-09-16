@@ -1,10 +1,10 @@
 package controllers
 
-import play.api._
+import lib.Config
 import play.api.mvc._
 
 object Application extends Controller {
   def index = Action {
-    Ok(views.html.main())
+    Ok(views.html.main(Config.apiUri))
   }
 }

@@ -34,32 +34,3 @@ object WowzaIncomingController extends Controller with ArgoHelpers {
     })
   }
 }
-
-object WowzaOutgoingController extends Controller with ArgoHelpers {
-  private def wrapStream(stream: WowzaOutgoingStream): EntityResponse[WowzaOutgoingStream] = {
-    val actions = List(
-      ArgoAction("enable", URI.create(s"${Config.domainRoot}/wowza/outgoing/${stream.entryName}"), PUT),
-      ArgoAction("delete", URI.create(s"${Config.domainRoot}/wowza/outgoing/${stream.entryName}"), DELETE)
-    )
-
-    EntityResponse(data = stream, actions = actions)
-  }
-
-  def list(appName: String) = Action.async {
-    val streamFuture = WowzaOutgoingStreamApi.list(appName)
-
-    streamFuture.map[Result]((streams: Seq[WowzaOutgoingStream]) => {
-      streams match {
-        case Nil => respondNotFound("no outgoing streams found")
-        case stream :: _ => {
-          val uri = URI.create(s"${Config.domainRoot}/wowza/outgoing/list/$appName")
-
-          respondCollection[EntityResponse[WowzaOutgoingStream]](
-            uri = Some(uri),
-            data = streams.map(wrapStream)
-          )
-        }
-      }
-    })
-  }
-}

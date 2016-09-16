@@ -1,10 +1,14 @@
+<div ng-if="ctrl.incomingFail">
+    no incoming streams found!
+</div>
+
 <form ng-submit="ctrl.submit()">
     <select name="wowzaStream" id="wowzaStream" ng-model="formData.wowzaStream">
-        <option ng-repeat="option in ctrl.wowzaStreams.data" value="{{option.data.name}}">{{option.data.name}}</option>
+        <option ng-repeat="option in ctrl.wowzaStreams" value="{{option.data.name}}">{{option.data.name}}</option>
     </select>
 
     <select name="channel" id="channel" ng-model="formData.channel">
-        <option ng-repeat="option in ctrl.channels.data" value="{{option.data.id}}">{{option.data.title}}</option>
+        <option ng-repeat="option in ctrl.channels" value="{{option.data.id}}">{{option.data.title}}</option>
     </select>
 
     <input type="hidden" value="live" ng-model="formData.wowzaApp" />

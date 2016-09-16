@@ -26,5 +26,4 @@ object CollectionResponse extends WriteHelpers {
       (__ \ "data").write[Seq[T]] ~
       (__ \ "links").writeNullable[List[Link]].contramap(someListOrNone[Link])
     )(unlift(CollectionResponse.unapply[T]))
-
 }

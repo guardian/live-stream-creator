@@ -5,6 +5,7 @@ import './services/youtube-channel-api';
 import './services/wowza-incoming-api';
 import './lv-list/lv-list';
 import './lv-create/lv-create';
+import './lv-detail/lv-detail';
 
 const app = angular.module('liveVideo', [
     'util.async',
@@ -12,7 +13,8 @@ const app = angular.module('liveVideo', [
     'lv.services.api.youtube',
     'lv.services.api.wowza',
     'lv.list',
-    'lv.create'
+    'lv.create',
+    'lv.detail'
 ]);
 
 const config = {
@@ -25,7 +27,7 @@ angular.forEach(config, (value, key) => app.constant(key, value));
 app.directive('lvApp', [function () {
     return {
         restrict: 'E',
-        template: `<lv-create></lv-create>`
+        template: `<lv-detail></lv-detail>`
     }
 }]);
 

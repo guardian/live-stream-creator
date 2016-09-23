@@ -9,7 +9,6 @@ youtubeChannelApi.factory('youtubeChannelApi', ['apiRoot', 'theseus.client', fun
     const list = () => root.follow('outgoing-youtube').get();
 
     return {
-        root,
         list
     }
 }]);

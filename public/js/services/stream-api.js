@@ -6,9 +6,9 @@ export const streamApi = angular.module('lv.services.api.stream', ['theseus']);
 streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', function ($q, apiRoot, client, apiPoll) {
     const root = client.resource(apiRoot);
 
-    function list() {
-        return root.follow('streams').get();
-    }
+    const get = (id) => root.follow('stream', {id: id}).get();
+
+    const list = () => root.follow('streams').get();
 
     function create(newStreamRequest) {
         // TODO look up this value via wowza api?
@@ -35,7 +35,7 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
     }
 
     return {
-        root,
+        get,
         list,
         create
     };

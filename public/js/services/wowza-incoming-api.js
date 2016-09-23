@@ -9,7 +9,6 @@ wowzaIncomingApi.factory('wowzaIncomingApi', ['apiRoot', 'theseus.client', funct
     const list = (id = 'live') => root.follow('incoming-wowza', {id: id}).get();
 
     return {
-        root,
         list
     }
 }]);

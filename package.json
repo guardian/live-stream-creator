@@ -13,7 +13,9 @@
     "lint-css": "csslint --exclude-list=*.js public/js",
     "lint-js": "eslint public/js",
     "hint-js": "jshint public/js",
-    "postinstall": "jspm install"
+    "postinstall": "jspm install",
+    "dist": "jspm bundle js/main public/js/dist/build.js -m --inject --no-mangle",
+    "undist": "jspm unbundle && rm -f public/js/dist/build.js"
   },
   "jspm": {
     "directories": {

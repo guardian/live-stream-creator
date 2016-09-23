@@ -22,17 +22,19 @@ dependencies:
     - "project/target/resolution-cache"
     - "project/target/streams"
     - "node_modules"
+    - "public/jspm_packages"
   override:
     - npm install
+    - npm run undist
     - sbt test:compile
 
 test:
   override:
     - npm test
-    - exit 0 #fake successful test!
 
 deployment:
   riffraff:
     branch: /.*/    #match all branches
     commands:
+      - npm run dist
       - sbt riffRaffUpload

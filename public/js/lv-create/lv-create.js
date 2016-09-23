@@ -7,13 +7,8 @@ export const lvList = angular.module('lv.create', [
 
 ]);
 
-lvList.controller('lvCreateController', ['$scope', '$http', '$q', 'apiPoll', 'streamApi', function ($scope, $http, $q, apiPoll, streamApi) {
+lvList.controller('lvCreateController', ['$scope', '$http', '$q', '$sce', 'apiPoll', 'streamApi', function ($scope, $http, $q, $sce, apiPoll, streamApi) {
     const ctrl = this;
-
-    streamApi.list()
-        .then((x) => {
-            console.log(x);
-        });
 
     streamApi.root.follow('incoming-wowza', {id: 'live'})
         .get()
@@ -37,51 +32,15 @@ lvList.controller('lvCreateController', ['$scope', '$http', '$q', 'apiPoll', 'st
 
         streamApi.create($scope.formData)
             .then((resp) => {
-                debugger;
+                console.log(resp);
+                ctrl.monitored = true;
+                ctrl.stream = resp.data.data;
+                ctrl.monitorEmbed = $sce.trustAsResourceUrl(`https://www.youtube.com/embed/${ctrl.stream.videoId}?autoplay=1`)
             })
             .catch((resp) => {
-                debugger;
+                console.log(resp);
             });
     };
-
-
-    // $http.get('/api/incoming/live')
-    //     .success((data) => {
-    //         ctrl.wowzaStreams = data;
-    //     });
-    //
-    // $http.get('/api/destinations/youtube')
-    //     .success((data) => {
-    //         ctrl.channels = data;
-    //     });
-    //
-    // ctrl.submit = () => {
-    //     $scope.formData.wowzaApp = 'live';
-    //
-    //     const requestData = {
-    //         data: $scope.formData
-    //     };
-    //
-    //     $http.post('/api/streams', requestData).success((data) => {
-    //         const monitorData = {
-    //             data: { monitor: true }
-    //         };
-    //
-    //         const healthUrl = data.data.links.find((x) => x.rel === 'health').href;
-    //
-    //         const untilStreamIsActive = () => {
-    //             $http.get(healthUrl).success((resp) => resp.data.data.status === 'active' ? true : $q.reject())
-    //         };
-    //
-    //         debugger;
-    //         apiPoll(() => untilStreamIsActive());
-    //         debugger;
-    //         // $http.put(url, monitorData)
-    //         //     .success((data) => {
-    //         //         console.log(data);
-    //         //     });
-    //     });
-    // }
 }]);
 
 lvList.directive('lvCreate', [function () {

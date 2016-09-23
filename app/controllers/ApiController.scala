@@ -18,11 +18,11 @@ object ApiController extends Controller with ArgoHelpers {
     val indexData = ApiIndex("live-stream-creator-api", "live stream creator api")
 
     val indexLinks = List(
-      Link("streams", ApiUtil.getApiUrl("streams")),
-      Link("stream", ApiUtil.getApiUrl("stream/{id}")),
-      Link("stream-health", ApiUtil.getApiUrl("stream/{id}/health")),
-      Link("incoming-wowza", ApiUtil.getApiUrl("incoming/{id}")),
-      Link("outgoing-youtube", ApiUtil.getApiUrl("outgoing/youtube"))
+      Link("streams", ApiUtil.getApiUri("streams")),
+      Link("stream", ApiUtil.getApiUri("stream/{id}")),
+      Link("stream-health", ApiUtil.getApiUri("stream/{id}/health")),
+      Link("incoming-wowza", ApiUtil.getApiUri("incoming/{id}")),
+      Link("outgoing-youtube", ApiUtil.getApiUri("outgoing/youtube"))
     )
 
     respond(indexData, indexLinks)

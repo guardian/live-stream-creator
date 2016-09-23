@@ -24,20 +24,13 @@ object YouTubeLiveStream {
   }
 }
 
-case class YouTubeStreamHealthStatus (status: String) {
-  override def toString = status
-}
-object HealthActive extends YouTubeStreamHealthStatus("active")
+case class YouTubeStreamHealthStatus (
+  streamStatus: String,
+  broadcastStatus: String
+)
 
 object YouTubeStreamHealthStatus {
   implicit val reads: Reads[YouTubeStreamHealthStatus] = Json.reads[YouTubeStreamHealthStatus]
   implicit val writes: Writes[YouTubeStreamHealthStatus] = Json.writes[YouTubeStreamHealthStatus]
-
-  def build(status: String): YouTubeStreamHealthStatus = {
-    status match {
-      case "active" => HealthActive
-      case _ => YouTubeStreamHealthStatus(status)
-    }
-  }
 }
 

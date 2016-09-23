@@ -24,17 +24,25 @@ object LiveStreamApi {
     } yield liveStream
   }
 
-  def monitor(id: String, request: YouTubeLiveStreamUpdateRequest): Future[YouTubeLiveStream] = {
+  def monitor(id: String, request: YouTubeLiveStreamMonitorRequest): Future[YouTubeLiveStream] = {
     for {
       stream <- transform(get(id))
       ytChannel <- transform(YouTubeChannelApi.get(stream.channelId))
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
       ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
-      updatedBroadcast <- transform(YouTubeBroadcastApi.startMonitor(ytChannel, ytBroadcast))
+      updatedBroadcast <- transform(YouTubeBroadcastApi.monitor(ytChannel, ytBroadcast))
       updatedStream = YouTubeLiveStream.build(ytChannel, ytStream, updatedBroadcast)
+    } yield updatedStream
+  }
 
-//      saved = DataStore.update(updatedStream)
-
+  def start(id: String, request: YouTubeLiveStreamStartRequest): Future[YouTubeLiveStream] = {
+    for {
+      stream <- transform(get(id))
+      ytChannel <- transform(YouTubeChannelApi.get(stream.channelId))
+      ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
+      ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
+      updatedBroadcast <- transform(YouTubeBroadcastApi.start(ytChannel, ytBroadcast))
+      updatedStream = YouTubeLiveStream.build(ytChannel, ytStream, updatedBroadcast)
     } yield updatedStream
   }
 
@@ -51,6 +59,9 @@ object LiveStreamApi {
       stream <- transform(get(id))
       ytChannel <- transform(YouTubeChannelApi.get(stream.channelId))
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
-    } yield YouTubeStreamHealthStatus.build(ytStream.getStatus.getStreamStatus)
+      ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
+      streamStatus = YouTubeStreamApi.getStatus(ytStream)
+      broadcastStatus = YouTubeBroadcastApi.getStatus(ytBroadcast)
+    } yield YouTubeStreamHealthStatus(streamStatus, broadcastStatus.toString)
   }
 }

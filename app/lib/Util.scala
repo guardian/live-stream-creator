@@ -1,5 +1,13 @@
 package lib
 
+import java.net.URI
+import play.utils.UriEncoding
+
 object ApiUtil {
-  def getApiUrl(path: String): String = s"${Config.apiUri}/$path"
+  def getApiUri(path: String) = {
+    URI.create(UriEncoding.encodePathSegment(s"${Config.apiUri}/$path", "UTF-8"))
+
+
+//    URI.create(s"${Config.apiUri}/${UriEncoding.encodePathSegment(path, "UTF-8")}")
+  }
 }

@@ -2,7 +2,7 @@ package controllers
 
 import java.net.URI
 
-import lib.{ApiUtil, Config, LiveStreamApi, PUT}
+import lib._
 import lib.argo.ArgoHelpers
 import lib.argo.model.{EntityResponse, Link, Action => ArgoAction}
 import model._
@@ -12,12 +12,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object LiveStreamController extends Controller with ArgoHelpers {
-  private def getStreamUri(stream: YouTubeLiveStream, path: Option[String] = None): URI = getStreamUri(stream.id, path)
+  private def getStreamUri(stream: YouTubeLiveStream, path: Option[String] = None): URI = {
+    getStreamUri(stream.id, path)
+  }
 
   private def getStreamUri(id: String, path: Option[String]): URI = {
     path match {
-      case Some(p) => URI.create(ApiUtil.getApiUrl(s"stream/$id/$p"))
-      case _ => URI.create(ApiUtil.getApiUrl(s"stream/$id"))
+      case Some(p) => ApiUtil.getApiUri(s"stream/$id/$p")
+      case _ => ApiUtil.getApiUri(s"stream/$id")
     }
   }
 
@@ -26,24 +28,31 @@ object LiveStreamController extends Controller with ArgoHelpers {
       uri = Some(getStreamUri(stream)),
       data = stream,
       links = List(
-        Link("health", getStreamUri(stream, Some("health")).toString)
+        Link("healthcheck", getStreamUri(stream, Some("healthcheck")))
       ),
       actions = List(
-        ArgoAction("monitor", getStreamUri(stream, Some("monitor")), PUT)
+        ArgoAction("monitor", getStreamUri(stream, Some("monitor")), PUT),
+        ArgoAction("start", getStreamUri(stream, Some("start")), PUT)
       )
     )
   }
 
-  private def wrapStreamHealthStatus(streamId: String, healthStatus: YouTubeStreamHealthStatus): EntityResponse[YouTubeStreamHealthStatus] = {
-    EntityResponse(
-      uri = Some(getStreamUri(streamId, Some("health"))),
-      data = healthStatus
+  private def respondStream(stream: YouTubeLiveStream) = {
+    val uri = Some(getStreamUri(stream))
+    val links = List(
+      Link("healthcheck", getStreamUri(stream, Some("healthcheck")))
     )
+    val actions = List(
+      ArgoAction("monitor", getStreamUri(stream, Some("monitor")), PUT),
+      ArgoAction("start", getStreamUri(stream, Some("start")), PUT)
+    )
+
+    respond[YouTubeLiveStream](data=stream, links=links, actions=actions, uri=uri)
   }
 
   def get(streamId: String) = Action.async {
     LiveStreamApi.get(streamId).map[Result] {
-      case Some(stream) => respond[EntityResponse[YouTubeLiveStream]](wrapStream(stream))
+      case Some(stream) => respondStream(stream)
       case None => respondError(BadRequest, "meep", "no stream found")
     }
   }
@@ -65,23 +74,36 @@ object LiveStreamController extends Controller with ArgoHelpers {
     (request.body \ "data").asOpt[YouTubeLiveStreamCreateRequest] match {
       case Some(streamRequest) => {
         LiveStreamApi.create(streamRequest).map { stream => {
-          respond[EntityResponse[YouTubeLiveStream]](wrapStream(stream))
+          respondStream(stream)
         }}
       }
       case None => Future(respondError(BadRequest, "meep", "cannot deseralize request"))
     }
   }
 
-  def getHealthStatus(streamId: String) = Action.async {
+  def healthcheck(streamId: String) = Action.async {
     LiveStreamApi.getStatus(streamId).map[Result] { status =>
-      respond[EntityResponse[YouTubeStreamHealthStatus]](wrapStreamHealthStatus(streamId, status))
+      val uri = Some(getStreamUri(streamId, Some("health")))
+
+      respond[YouTubeStreamHealthStatus](data=status, uri=uri)
     }
   }
 
-  def updateMonitor(streamId: String) = Action.async(parse.json) { request =>
-    (request.body \ "data").asOpt[YouTubeLiveStreamUpdateRequest] match {
+  def monitor(streamId: String) = Action.async(parse.json) { request =>
+    (request.body \ "data").asOpt[YouTubeLiveStreamMonitorRequest] match {
       case Some(updateRequest) => {
         LiveStreamApi.monitor(streamId, updateRequest).map { stream => {
+          respondStream(stream)
+        }}
+      }
+      case None => Future(respondError(BadRequest, "meep", "cannot deseralize request"))
+    }
+  }
+
+  def start(streamId: String) = Action.async(parse.json) { request =>
+    (request.body \ "data").asOpt[YouTubeLiveStreamStartRequest] match {
+      case Some(startRequest) => {
+        LiveStreamApi.start(streamId, startRequest).map { stream => {
           respond[EntityResponse[YouTubeLiveStream]](wrapStream(stream))
         }}
       }

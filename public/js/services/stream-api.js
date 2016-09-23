@@ -16,25 +16,22 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
             newStreamRequest.wowzaApp = 'live'
         }
 
-        function untilStreamActive (stream) {
-            return root.follow('stream-health', {id: stream.data.id}).get().then((resp) => {
-                console.log(resp);
-               if (resp.data.status === 'active') {
-                   return resp.data.status;
-               } else {
-                   $q.reject();
-               }
-            });
+        function untilStreamActive(stream) {
+            return stream.follow('healthcheck').get()
+                .then(healthcheck => healthcheck.data.streamStatus === 'active' ? stream : $q.reject());
+        }
+
+        function untilStreamInTesting(stream) {
+            return stream.follow('healthcheck').get()
+                .then(healthcheck => angular.equals(healthcheck.data, {broadcastStatus: 'testing', streamStatus: 'active'}) ? stream : $q.reject());
         }
 
         return root.follow('streams')
             .post({data: newStreamRequest})
-            .then((newStream) => {
-                apiPoll(() => untilStreamActive(newStream.data))
-            }).then((health) => {
-                console.log(health);
-                debugger;
-            });
+            .then(newStream => apiPoll(() => untilStreamActive(newStream)))
+            .then(activeStream => activeStream.perform('monitor', {body: {data: {monitor: true}}}))
+            .then(monStream => apiPoll(() => untilStreamInTesting(monStream)))
+            .then(monitoredStream => monitoredStream.perform('start', {body: {data: {start: true}}}));
     }
 
     return {

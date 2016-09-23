@@ -21,10 +21,16 @@ object YouTubeDateTime {
   }
 }
 
-case class TransitionState(status: String) { override def toString: String = status }
-object TestingState extends TransitionState("testing")
-object LiveState extends TransitionState("live")
-object CompleteState extends TransitionState("complete")
+case class StreamState(status: String) { override def toString: String = status }
+object TestingState extends StreamState("testing")
+object LiveState extends StreamState("live")
+object CompleteState extends StreamState("complete")
+object ReadyState extends StreamState("ready")
+
+case class Visibility(status: String) { override def toString: String = status }
+object PublicVisibility extends Visibility("public")
+object UnlistedVisibility extends Visibility("unlisted")
+object PrivateVisibility extends Visibility("private")
 
 trait YouTubeAuth {
   private val httpTransport = new NetHttpTransport()
@@ -57,8 +63,8 @@ object YouTubeChannelApi extends YouTubeAuth {
     if (id.isDefined) request.setId(id.get)
 
     if (isContentOwnerMode) {
-      request.setManagedByMe(true)
-        .setOnBehalfOfContentOwner(youtubeContentOwner.get)
+      request.setOnBehalfOfContentOwner(youtubeContentOwner.get)
+      if (id.isEmpty) request.setManagedByMe(true)
     } else {
       if (id.isEmpty) request.setMine(true)
     }
@@ -69,8 +75,6 @@ object YouTubeChannelApi extends YouTubeAuth {
 
 object YouTubeStreamApi extends YouTubeAuth {
   def get(channel: Channel, id: String): Future[Option[LiveStream]] = list(channel, Some(id)).map(_.headOption)
-
-  def isActive(stream: LiveStream): Boolean = stream.getStatus.getStreamStatus == "active"
 
   def list(channel: Channel, id: Option[String] = None) = Future {
     val request = youtube.liveStreams
@@ -93,6 +97,12 @@ object YouTubeStreamApi extends YouTubeAuth {
       bindBroadcastToStream(broadcast, stream)
     })
   }
+
+  def getStatus(stream: LiveStream) = {
+    stream.getStatus.getStreamStatus
+  }
+
+  def isActive(stream: LiveStream): Boolean = getStatus(stream) == "active"
 
   private def bindBroadcastToStream(broadcast: LiveBroadcast, stream: LiveStream) = {
     val request = youtube.liveBroadcasts
@@ -158,7 +168,7 @@ object YouTubeBroadcastApi extends YouTubeAuth {
     request.execute.getItems.asScala.toList
   }
 
-  def startMonitor(channel: Channel, broadcast: LiveBroadcast) = {
+  def monitor(channel: Channel, broadcast: LiveBroadcast) = {
     transition(channel, broadcast, TestingState)
   }
 
@@ -170,15 +180,60 @@ object YouTubeBroadcastApi extends YouTubeAuth {
     transition(channel, broadcast, CompleteState)
   }
 
-  private def transition(channel: Channel, broadcast: LiveBroadcast, lifeCycleStatus: TransitionState): Future[Option[LiveBroadcast]] = {
+  def getStatus(broadcast: LiveBroadcast): StreamState = {
+    broadcast.getStatus.getLifeCycleStatus match {
+      case "ready" => ReadyState
+      case "testing" => TestingState
+      case "live" => LiveState
+      case "complete" => CompleteState
+      case status => StreamState(status)
+    }
+  }
+
+  def isValidTransition(stream: LiveStream, broadcast: LiveBroadcast, newState: StreamState): Boolean = {
+    val currentState = YouTubeBroadcastApi.getStatus(broadcast)
+
+    currentState match {
+      case ReadyState => {
+        newState match {
+          case TestingState => {
+            // stream bound to broadcast has to be active before transitioning broadcast status
+            // see https://developers.google.com/youtube/v3/live/docs/liveBroadcasts/transition
+            YouTubeStreamApi.isActive(stream)
+          }
+          case LiveState => true
+          case _ => false
+        }
+      }
+      case TestingState => {
+        newState match {
+          case LiveState => true
+          case _ => false
+        }
+      }
+      case LiveState => {
+        newState match {
+          case CompleteState => true
+          case _ => false
+        }
+      }
+      case CompleteState => {
+        newState match {
+          case LiveState => true
+          case _ => false
+        }
+      }
+    }
+  }
+
+  private def transition(channel: Channel, broadcast: LiveBroadcast, lifeCycleStatus: StreamState): Future[Option[LiveBroadcast]] = {
 
     YouTubeStreamApi.get(channel, broadcast.getContentDetails.getBoundStreamId).map {
       case Some(stream) => {
-        if (! YouTubeStreamApi.isActive(stream)) {
-          // stream bound to broadcast has to be active before transitioning broadcast status
-          // see https://developers.google.com/youtube/v3/live/docs/liveBroadcasts/transition
+        if (! YouTubeBroadcastApi.isValidTransition(stream, broadcast, lifeCycleStatus)) {
           None
-        } else {
+        }
+        else {
           val request = youtube.liveBroadcasts
             .transition(lifeCycleStatus.toString, broadcast.getId, "status")
 
@@ -201,7 +256,7 @@ object YouTubeBroadcastApi extends YouTubeAuth {
       .setChannelId(channel.getId)
 
     val status = new LiveBroadcastStatus()
-      .setPrivacyStatus("public")
+      .setPrivacyStatus(UnlistedVisibility.toString)
 
     val broadcast = new LiveBroadcast()
       .setKind("youtube#liveBroadcast")

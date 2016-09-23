@@ -52,7 +52,7 @@ async.factory('poll', ['$q', 'delay', 'race', function($q, delay, race) {
 
 // Polling with sensible defaults for API polling
 async.factory('apiPoll', ['poll', function(poll) {
-    const pollFrequency = 500; // ms
-    const pollTimeout   = 20 * 1000; // ms
+    const pollFrequency = 1000; // ms
+    const pollTimeout   = 50 * 1000; // ms
     return func => poll(func, pollFrequency, pollTimeout);
 }]);

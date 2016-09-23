@@ -33,13 +33,12 @@ lvList.controller('lvCreateController', [
 
             streamApi.create($scope.formData)
                 .then((resp) => {
-                    console.log(resp);
                     ctrl.monitored = true;
                     ctrl.stream = resp.data.data;
-                    ctrl.monitorEmbed = $sce.trustAsResourceUrl(`https://www.youtube.com/embed/${ctrl.stream.videoId}?autoplay=1`)
+                    ctrl.monitorEmbed = $sce.trustAsResourceUrl(`https://www.youtube.com/embed/${ctrl.stream.videoId}?autoplay=1`);
                 })
-                .catch((resp) => {
-                    console.log(resp);
+                .catch(() => {
+
                 });
         };
     }
@@ -52,5 +51,5 @@ lvList.directive('lvCreate', [function () {
         controllerAs: 'ctrl',
         bindToController: true,
         template: template
-    }
+    };
 }]);

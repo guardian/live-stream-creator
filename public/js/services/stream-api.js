@@ -13,7 +13,7 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
     function create(newStreamRequest) {
         // TODO look up this value via wowza api?
         if (! newStreamRequest.wowzaApp) {
-            newStreamRequest.wowzaApp = 'live'
+            newStreamRequest.wowzaApp = 'live';
         }
 
         function untilStreamActive(stream) {

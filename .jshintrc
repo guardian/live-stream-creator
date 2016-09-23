@@ -1,0 +1,10 @@
+{
+    // see https://github.com/jshint/jshint/blob/master/examples/.jshintrc for complete list of options
+    "esversion": 6,
+    "newcap": true,
+    "quotmark": "single",
+    "maxdepth": 3,
+    "browser": true,
+    "mocha": false,
+    "globals": {}
+}

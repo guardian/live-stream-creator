@@ -23,5 +23,5 @@ lvList.directive('lvList', [function () {
         controllerAs: 'ctrl',
         bindToController: true,
         template: template
-    }
+    };
 }]);

@@ -27,8 +27,8 @@ angular.forEach(config, (value, key) => app.constant(key, value));
 app.directive('lvApp', [function () {
     return {
         restrict: 'E',
-        template: `<lv-detail></lv-detail>`
-    }
+        template: '<lv-detail></lv-detail>'
+    };
 }]);
 
 angular.element(document).ready(function() {

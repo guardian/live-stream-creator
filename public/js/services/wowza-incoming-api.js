@@ -10,5 +10,5 @@ wowzaIncomingApi.factory('wowzaIncomingApi', ['apiRoot', 'theseus.client', funct
 
     return {
         list
-    }
+    };
 }]);

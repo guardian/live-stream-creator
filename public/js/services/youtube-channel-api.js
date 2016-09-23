@@ -10,5 +10,5 @@ youtubeChannelApi.factory('youtubeChannelApi', ['apiRoot', 'theseus.client', fun
 
     return {
         list
-    }
+    };
 }]);

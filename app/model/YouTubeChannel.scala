@@ -3,8 +3,9 @@ package model
 import java.net.URI
 
 import com.google.api.services.youtube.model.Channel
+import com.gu.scanamo.DynamoFormat
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Reads, Writes, _}
+import play.api.libs.json._
 
 import scala.util.Try
 
@@ -13,7 +14,9 @@ case class YouTubeChannel(
   title: String,
   thumbnail: URI,
   contentOwner: Option[String]
-)
+) {
+  override def toString: String = Json.toJson(this).toString()
+}
 
 object YouTubeChannel {
   implicit val reads: Reads[YouTubeChannel] = (
@@ -38,4 +41,10 @@ object YouTubeChannel {
       Try { channel.getContentOwnerDetails.getContentOwner }.toOption
     )
   }
+
+  def build(json: String): YouTubeChannel = {
+    Json.parse(json).as[YouTubeChannel]
+  }
+
+  implicit val stringFormat = DynamoFormat.coercedXmap[YouTubeChannel, String, IllegalArgumentException](YouTubeChannel.build)(_.toString)
 }

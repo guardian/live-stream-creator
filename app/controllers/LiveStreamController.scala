@@ -32,7 +32,8 @@ object LiveStreamController extends Controller with ArgoHelpers {
       ),
       actions = List(
         ArgoAction("monitor", getStreamUri(stream, Some("monitor")), PUT),
-        ArgoAction("start", getStreamUri(stream, Some("start")), PUT)
+        ArgoAction("start", getStreamUri(stream, Some("start")), PUT),
+        ArgoAction("stop", getStreamUri(stream, Some("stop")), PUT)
       )
     )
   }
@@ -44,7 +45,8 @@ object LiveStreamController extends Controller with ArgoHelpers {
     )
     val actions = List(
       ArgoAction("monitor", getStreamUri(stream, Some("monitor")), PUT),
-      ArgoAction("start", getStreamUri(stream, Some("start")), PUT)
+      ArgoAction("start", getStreamUri(stream, Some("start")), PUT),
+      ArgoAction("stop", getStreamUri(stream, Some("stop")), PUT)
     )
 
     respond[YouTubeLiveStream](data=stream, links=links, actions=actions, uri=uri)
@@ -104,6 +106,17 @@ object LiveStreamController extends Controller with ArgoHelpers {
     (request.body \ "data").asOpt[YouTubeLiveStreamStartRequest] match {
       case Some(startRequest) => {
         LiveStreamApi.start(streamId, startRequest).map { stream => {
+          respond[EntityResponse[YouTubeLiveStream]](wrapStream(stream))
+        }}
+      }
+      case None => Future(respondError(BadRequest, "meep", "cannot deseralize request"))
+    }
+  }
+
+  def stop(streamId: String) = Action.async(parse.json) { request =>
+    (request.body \ "data").asOpt[YouTubeLiveStreamStopRequest] match {
+      case Some(stopRequest) => {
+        LiveStreamApi.stop(streamId, stopRequest).map { stream => {
           respond[EntityResponse[YouTubeLiveStream]](wrapStream(stream))
         }}
       }

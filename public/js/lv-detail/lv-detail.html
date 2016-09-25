@@ -1,3 +1,23 @@
-<div>{{ctrl.stream.data.id}}</div>
+<a ng-href="/stream/{{ctrl.stream.data.id}}">{{ctrl.stream.data.id}}</a>
+
+<yt-channel channel="ctrl.stream.data.channel"></yt-channel>
+
+<div>
+    <span ng-if="ctrl.healthcheck === undefined">
+        Loading healthcheck...
+    </span>
+    <span ng-if="ctrl.healthcheck">
+        <div>Stream Status: {{ctrl.healthcheck.streamStatus}}</div>
+        <div>Broadcast Status: {{ctrl.healthcheck.broadcastStatus}}</div>
+
+        <div ng-if="ctrl.isCurrentlyLive">
+            LIVE NOW!!
+
+        </div>
+            <button ng-click="ctrl.stopStream()">
+                Stop now!
+            </button>
+    </span>
+</div>
 
 <iframe width="425" height="344" ng-src="{{ctrl.embedSrc}}" frameborder="0" allowfullscreen></iframe>

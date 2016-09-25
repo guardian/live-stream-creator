@@ -13,7 +13,8 @@ POST    /api/streams                    controllers.LiveStreamController.create(
 GET     /api/stream/:streamId           controllers.LiveStreamController.get(streamId: String)
 GET     /api/stream/:streamId/healthcheck controllers.LiveStreamController.healthcheck(streamId: String)
 PUT     /api/stream/:streamId/monitor   controllers.LiveStreamController.monitor(streamId: String)
-PUT     /api/stream/:streamId/start   controllers.LiveStreamController.start(streamId: String)
+PUT     /api/stream/:streamId/start     controllers.LiveStreamController.start(streamId: String)
+PUT     /api/stream/:streamId/stop      controllers.LiveStreamController.stop(streamId: String)
 
 GET     /api/incoming/:appName          controllers.WowzaIncomingController.list(appName: String)
 GET     /api/outgoing/youtube           controllers.YouTubeChannelController.list()

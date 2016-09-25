@@ -27,7 +27,7 @@ object LiveStreamApi {
   def monitor(id: String, request: YouTubeLiveStreamMonitorRequest): Future[YouTubeLiveStream] = {
     for {
       stream <- transform(get(id))
-      ytChannel <- transform(YouTubeChannelApi.get(stream.channelId))
+      ytChannel <- transform(YouTubeChannelApi.get(stream.channel.id))
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
       ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
       updatedBroadcast <- transform(YouTubeBroadcastApi.monitor(ytChannel, ytBroadcast))
@@ -38,10 +38,24 @@ object LiveStreamApi {
   def start(id: String, request: YouTubeLiveStreamStartRequest): Future[YouTubeLiveStream] = {
     for {
       stream <- transform(get(id))
-      ytChannel <- transform(YouTubeChannelApi.get(stream.channelId))
+      ytChannel <- transform(YouTubeChannelApi.get(stream.channel.id))
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
       ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
       updatedBroadcast <- transform(YouTubeBroadcastApi.start(ytChannel, ytBroadcast))
+      updatedStream = YouTubeLiveStream.build(ytChannel, ytStream, updatedBroadcast)
+    } yield updatedStream
+  }
+
+  def stop(id: String, request: YouTubeLiveStreamStopRequest): Future[YouTubeLiveStream] = {
+    for {
+      stream <- transform(get(id))
+      ytChannel <- transform(YouTubeChannelApi.get(stream.channel.id))
+      ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
+      ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
+      updatedBroadcast <- transform(YouTubeBroadcastApi.stop(ytChannel, ytBroadcast))
+
+//      wz = WowzaOutgoingStreamApi.delete()
+
       updatedStream = YouTubeLiveStream.build(ytChannel, ytStream, updatedBroadcast)
     } yield updatedStream
   }
@@ -57,7 +71,7 @@ object LiveStreamApi {
   def getStatus(id: String) = {
     for {
       stream <- transform(get(id))
-      ytChannel <- transform(YouTubeChannelApi.get(stream.channelId))
+      ytChannel <- transform(YouTubeChannelApi.get(stream.channel.id))
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
       ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
       streamStatus = YouTubeStreamApi.getStatus(ytStream)

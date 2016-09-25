@@ -1,26 +1,38 @@
 package model
 
 import com.google.api.services.youtube.model.{Channel, LiveBroadcast, LiveStream}
-import play.api.libs.json.{Json, Reads, Writes}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class YouTubeLiveStream (
   id: String,
   broadcastId: String,
-  channelId: String,
+  channel: YouTubeChannel,
   videoId: String
 )
 
 object YouTubeLiveStream {
-  implicit val reads: Reads[YouTubeLiveStream] = Json.reads[YouTubeLiveStream]
-  implicit val writes: Writes[YouTubeLiveStream] = Json.writes[YouTubeLiveStream]
+  implicit val reads: Reads[YouTubeLiveStream] = (
+    (__ \ "id").read[String] ~
+    (__ \ "broadcastId").read[String] ~
+    (__ \ "channel").read[YouTubeChannel] ~
+    (__ \ "video").read[String]
+  )(YouTubeLiveStream.apply _)
 
-  def build(channel: Channel, stream: LiveStream, broadcast: LiveBroadcast): YouTubeLiveStream = {
+  implicit val writes: Writes[YouTubeLiveStream] = (
+    (__ \ "id").write[String] ~
+    (__ \ "broadcastId").write[String] ~
+    (__ \ "channel").write[YouTubeChannel] ~
+    (__ \ "videoId").write[String]
+  )(unlift(YouTubeLiveStream.unapply))
+
+  def build(ytChannel: Channel, stream: LiveStream, broadcast: LiveBroadcast): YouTubeLiveStream = {
     val id = stream.getId
     val broadcastId = broadcast.getId
-    val channelId = channel.getId
+    val channel = YouTubeChannel.build(ytChannel)
     val videoId = broadcast.getId
 
-    YouTubeLiveStream(id, broadcastId, channelId, videoId)
+    YouTubeLiveStream(id, broadcastId, channel, videoId)
   }
 }
 

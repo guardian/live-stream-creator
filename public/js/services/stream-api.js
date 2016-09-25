@@ -10,21 +10,23 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
 
     const list = () => root.follow('streams').get();
 
-    function create(newStreamRequest) {
+    const create = (newStreamRequest) => {
         // TODO look up this value via wowza api?
         if (! newStreamRequest.wowzaApp) {
             newStreamRequest.wowzaApp = 'live';
         }
 
-        function untilStreamActive(stream) {
-            return stream.follow('healthcheck').get()
+        const untilStreamActive = (stream) => {
+            return performHealthcheck(stream)
                 .then(healthcheck => healthcheck.data.streamStatus === 'active' ? stream : $q.reject());
-        }
+        };
 
-        function untilStreamInTesting(stream) {
-            return stream.follow('healthcheck').get()
-                .then(healthcheck => angular.equals(healthcheck.data, {broadcastStatus: 'testing', streamStatus: 'active'}) ? stream : $q.reject());
-        }
+        const untilStreamInTesting = (stream) => {
+            const testingHealthcheck = { broadcastStatus: 'testing', streamStatus: 'active'};
+
+            return performHealthcheck(stream)
+                .then(healthcheck => angular.equals(healthcheck.data, testingHealthcheck) ? stream : $q.reject());
+        };
 
         return root.follow('streams')
             .post({data: newStreamRequest})
@@ -32,11 +34,25 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
             .then(activeStream => activeStream.perform('monitor', {body: {data: {monitor: true}}}))
             .then(monStream => apiPoll(() => untilStreamInTesting(monStream)))
             .then(monitoredStream => monitoredStream.perform('start', {body: {data: {start: true}}}));
-    }
+    };
+
+    const stop = (stream) => {
+        const untilStreamStopped = (maybeStoppedStream) => {
+            return performHealthcheck(maybeStoppedStream)
+                .then(healthcheck => healthcheck.data.broadcastStatus === 'complete');
+        };
+
+        return stream.perform('stop', {body: {data: {stop: true}}})
+            .then(maybeStopped =>apiPoll(() => untilStreamStopped(maybeStopped)));
+    };
+
+    const performHealthcheck = (stream) => stream.follow('healthcheck').get();
 
     return {
         get,
         list,
-        create
+        create,
+        stop,
+        performHealthcheck
     };
 }]);

@@ -227,15 +227,13 @@ object YouTubeBroadcastApi extends YouTubeAuth {
   }
 
   private def transition(channel: Channel, broadcast: LiveBroadcast, lifeCycleStatus: StreamState): Future[Option[LiveBroadcast]] = {
-
     YouTubeStreamApi.get(channel, broadcast.getContentDetails.getBoundStreamId).map {
       case Some(stream) => {
         if (! YouTubeBroadcastApi.isValidTransition(stream, broadcast, lifeCycleStatus)) {
           None
         }
         else {
-          val request = youtube.liveBroadcasts
-            .transition(lifeCycleStatus.toString, broadcast.getId, "status")
+          val request = youtube.liveBroadcasts.transition(lifeCycleStatus.toString, broadcast.getId, "status")
 
           if (isContentOwnerMode) {
             request.setOnBehalfOfContentOwner(youtubeContentOwner.get)

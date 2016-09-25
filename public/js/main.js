@@ -1,5 +1,5 @@
 import angular from 'angular';
-import './async';
+import './util/async';
 import './services/stream-api';
 import './services/youtube-channel-api';
 import './services/wowza-incoming-api';
@@ -23,11 +23,24 @@ const config = {
 
 angular.forEach(config, (value, key) => app.constant(key, value));
 
+app.controller('lvAppCtrl', ['streamApi', function (streamApi) {
+    const ctrl = this;
+
+    streamApi.get('quDGIMb4bc95CT90cXcPMA1474830289219518')
+        .then(stream => {
+            ctrl.stream = stream;
+        });
+}]);
+
 
 app.directive('lvApp', [function () {
     return {
         restrict: 'E',
-        template: '<lv-create></lv-create>'
+        controller: 'lvAppCtrl',
+        controllerAs: 'ctrl',
+        bindToController: true,
+        template: `<lv-detail ng-if="ctrl.stream" stream="ctrl.stream"></lv-detail>`
+        // template: `<lv-create></lv-create>`
     };
 }]);
 

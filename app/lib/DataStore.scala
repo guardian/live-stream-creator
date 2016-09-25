@@ -3,8 +3,9 @@ package lib
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient
 import com.gu.scanamo.query._
 import com.gu.scanamo.syntax._
-import com.gu.scanamo.{Scanamo, ScanamoAsync, Table}
-import model.YouTubeLiveStream
+import com.gu.scanamo.{DynamoFormat, Scanamo, ScanamoAsync, Table}
+import model.{YouTubeChannel, YouTubeLiveStream}
+import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -17,6 +18,8 @@ object DataStore {
     Config.awsCredentialsProviderChain,
     null
   )
+
+
 
   private def key(id: String) = UniqueKey(KeyEquals('id, id))
 

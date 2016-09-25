@@ -15,3 +15,10 @@ object YouTubeLiveStreamStartRequest {
   implicit val reads: Reads[YouTubeLiveStreamStartRequest] = Json.reads[YouTubeLiveStreamStartRequest]
   implicit val writes: Writes[YouTubeLiveStreamStartRequest] = Json.writes[YouTubeLiveStreamStartRequest]
 }
+
+case class YouTubeLiveStreamStopRequest(stop: Boolean)
+
+object YouTubeLiveStreamStopRequest {
+  implicit val reads: Reads[YouTubeLiveStreamStopRequest] = Json.reads[YouTubeLiveStreamStopRequest]
+  implicit val writes: Writes[YouTubeLiveStreamStopRequest] = Json.writes[YouTubeLiveStreamStopRequest]
+}

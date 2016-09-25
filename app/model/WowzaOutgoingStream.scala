@@ -3,6 +3,7 @@ package model
 import java.net.URI
 
 import com.google.api.services.youtube.model.LiveStream
+import com.gu.scanamo.DynamoFormat
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -32,6 +33,8 @@ case class WowzaOutgoingStream(
       port
     )
   }
+
+  override def toString: String = Json.toJson(this).toString()
 }
 
 object WowzaOutgoingStream {
@@ -74,4 +77,10 @@ object WowzaOutgoingStream {
       Some("youtube")
     )
   }
+
+  private def build(json: String): WowzaOutgoingStream = {
+    Json.parse(json).as[WowzaOutgoingStream]
+  }
+
+  implicit val stringFormat = DynamoFormat.coercedXmap[WowzaOutgoingStream, String, IllegalArgumentException](WowzaOutgoingStream.build)(_.toString)
 }

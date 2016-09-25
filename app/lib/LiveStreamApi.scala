@@ -15,8 +15,8 @@ object LiveStreamApi {
       channel <- transform(YouTubeChannelApi.get(request.channel))
       broadcast <- YouTubeBroadcastApi.create(channel, request.title)
       boundStream: LiveStream <- YouTubeStreamApi.create(broadcast)
-      liveStream = YouTubeLiveStream.build(channel, boundStream, broadcast)
       outgoingStreamRequest = WowzaOutgoingStream.build(incomingStream, boundStream, enabled = true)
+      liveStream = YouTubeLiveStream.build(channel, boundStream, broadcast, request.wowzaApp, outgoingStreamRequest)
       outgoingStream <- WowzaOutgoingStreamApi.create(request.wowzaApp, outgoingStreamRequest)
 
       saved = DataStore.create(liveStream)
@@ -26,13 +26,12 @@ object LiveStreamApi {
 
   def monitor(id: String, request: YouTubeLiveStreamMonitorRequest): Future[YouTubeLiveStream] = {
     for {
-      stream <- transform(get(id))
+      stream: YouTubeLiveStream <- transform(get(id))
       ytChannel <- transform(YouTubeChannelApi.get(stream.channel.id))
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
       ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
       updatedBroadcast <- transform(YouTubeBroadcastApi.monitor(ytChannel, ytBroadcast))
-      updatedStream = YouTubeLiveStream.build(ytChannel, ytStream, updatedBroadcast)
-    } yield updatedStream
+    } yield stream
   }
 
   def start(id: String, request: YouTubeLiveStreamStartRequest): Future[YouTubeLiveStream] = {
@@ -42,8 +41,7 @@ object LiveStreamApi {
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
       ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
       updatedBroadcast <- transform(YouTubeBroadcastApi.start(ytChannel, ytBroadcast))
-      updatedStream = YouTubeLiveStream.build(ytChannel, ytStream, updatedBroadcast)
-    } yield updatedStream
+    } yield stream
   }
 
   def stop(id: String, request: YouTubeLiveStreamStopRequest): Future[YouTubeLiveStream] = {
@@ -53,11 +51,8 @@ object LiveStreamApi {
       ytStream <- transform(YouTubeStreamApi.get(ytChannel, stream.id))
       ytBroadcast <- transform(YouTubeBroadcastApi.get(ytChannel, stream.broadcastId))
       updatedBroadcast <- transform(YouTubeBroadcastApi.stop(ytChannel, ytBroadcast))
-
-//      wz = WowzaOutgoingStreamApi.delete()
-
-      updatedStream = YouTubeLiveStream.build(ytChannel, ytStream, updatedBroadcast)
-    } yield updatedStream
+      _ = WowzaOutgoingStreamApi.delete(stream.wowzaApp, stream.wowzaOutgoingStream)
+    } yield stream
   }
 
   def get(id: String) = Future[Option[YouTubeLiveStream]] {

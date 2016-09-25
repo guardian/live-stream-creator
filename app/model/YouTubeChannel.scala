@@ -42,7 +42,7 @@ object YouTubeChannel {
     )
   }
 
-  def build(json: String): YouTubeChannel = {
+  private def build(json: String): YouTubeChannel = {
     Json.parse(json).as[YouTubeChannel]
   }
 

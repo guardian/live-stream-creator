@@ -26,7 +26,7 @@ angular.forEach(config, (value, key) => app.constant(key, value));
 app.controller('lvAppCtrl', ['streamApi', function (streamApi) {
     const ctrl = this;
 
-    streamApi.get('quDGIMb4bc95CT90cXcPMA1474830289219518')
+    streamApi.get('quDGIMb4bc95CT90cXcPMA1474835102995228')
         .then(stream => {
             ctrl.stream = stream;
         });

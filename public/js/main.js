@@ -1,4 +1,5 @@
 import angular from 'angular';
+import 'angular-route';
 import './util/async';
 import './services/stream-api';
 import './services/youtube-channel-api';
@@ -7,7 +8,16 @@ import './lv-list/lv-list';
 import './lv-create/lv-create';
 import './lv-detail/lv-detail';
 
+import listTemplate from './lv-list/lv-list.html!text';
+import createTemplate from './lv-create/lv-create.html!text';
+import detailTemplate from './lv-detail/lv-detail.html!text';
+
+const config = {
+    apiRoot: document.querySelector('link[rel="api-uri"]').getAttribute('href')
+};
+
 const app = angular.module('liveVideo', [
+    'ngRoute',
     'util.async',
     'lv.services.api.stream',
     'lv.services.api.youtube',
@@ -17,31 +27,30 @@ const app = angular.module('liveVideo', [
     'lv.detail'
 ]);
 
-const config = {
-    apiRoot: document.querySelector('link[rel="api-uri"]').getAttribute('href')
-};
-
 angular.forEach(config, (value, key) => app.constant(key, value));
 
-app.controller('lvAppCtrl', ['streamApi', function (streamApi) {
-    const ctrl = this;
+app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+    $locationProvider.html5Mode(true);
 
-    streamApi.get('quDGIMb4bc95CT90cXcPMA1474835102995228')
-        .then(stream => {
-            ctrl.stream = stream;
+    return $routeProvider
+        .when('/', {
+            template: listTemplate,
+            controller: 'lvListCtrl',
+            controllerAs: 'ctrl'
+        })
+        .when('/create', {
+            template: createTemplate,
+            controller: 'lvCreateCtrl',
+            controllerAs: 'ctrl'
+        })
+        .when('/stream/:id', {
+            template: detailTemplate,
+            controller: 'lvDetailCtrl',
+            controllerAs: 'ctrl'
+        })
+        .otherwise({
+            redirectTo: '/'
         });
-}]);
-
-
-app.directive('lvApp', [function () {
-    return {
-        restrict: 'E',
-        controller: 'lvAppCtrl',
-        controllerAs: 'ctrl',
-        bindToController: true,
-        template: `<lv-detail ng-if="ctrl.stream" stream="ctrl.stream"></lv-detail>`
-        // template: `<lv-create></lv-create>`
-    };
 }]);
 
 angular.element(document).ready(function() {

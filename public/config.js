@@ -9,11 +9,15 @@ System.config({
 
   map: {
     "angular": "github:angular/bower-angular@1.5.8",
+    "angular-route": "github:angular/bower-angular-route@1.5.8",
     "css": "github:systemjs/plugin-css@0.1.27",
     "text": "github:systemjs/plugin-text@0.0.9",
     "theseus-angular": "npm:theseus-angular@0.3.1",
     "traceur": "github:jmcriffey/bower-traceur@0.0.93",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.93",
+    "github:angular/bower-angular-route@1.5.8": {
+      "angular": "github:angular/bower-angular@1.5.8"
+    },
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.4.1"
     },

@@ -7,7 +7,7 @@ export const lvList = angular.module('lv.create', [
 
 ]);
 
-lvList.controller('lvCreateController', [
+lvList.controller('lvCreateCtrl', [
     '$scope',
     '$http',
     '$q',
@@ -47,7 +47,7 @@ lvList.controller('lvCreateController', [
 lvList.directive('lvCreate', [function () {
     return {
         restrict: 'E',
-        controller: 'lvCreateController',
+        controller: 'lvCreateCtrl',
         controllerAs: 'ctrl',
         bindToController: true,
         template: template

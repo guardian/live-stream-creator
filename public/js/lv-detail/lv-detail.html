@@ -1,4 +1,4 @@
-<a ng-href="/stream/{{ctrl.stream.data.id}}">{{ctrl.stream.data.id}}</a>
+<a ng-href="stream/{{ctrl.stream.data.id}}">{{ctrl.stream.data.id}}</a>
 
 <yt-channel channel="ctrl.stream.data.channel"></yt-channel>
 
@@ -13,10 +13,10 @@
         <div ng-if="ctrl.isCurrentlyLive">
             LIVE NOW!!
 
-        </div>
             <button ng-click="ctrl.stopStream()">
                 Stop now!
             </button>
+        </div>
     </span>
 </div>
 

@@ -3,23 +3,20 @@ import angular from 'angular';
 import './lv-list.css!';
 import template from './lv-list.html!text';
 
-export const lvList = angular.module('lv.list', [
+export const lvList = angular.module('lv.list', []);
 
-]);
-
-lvList.controller('lvListController', ['$scope', '$http', function ($scope, $http) {
+lvList.controller('lvListCtrl', ['streamApi', function (streamApi) {
     const ctrl = this;
 
-    $http.get('/api/youtube/channel/list')
-        .success((data) => {
-            ctrl.channels = data;
-        });
+    streamApi.list().then(streams => {
+        ctrl.streams = streams.data;
+    });
 }]);
 
 lvList.directive('lvList', [function () {
     return {
         restrict: 'E',
-        controller: 'lvListController',
+        controller: 'lvListCtrl',
         controllerAs: 'ctrl',
         bindToController: true,
         template: template

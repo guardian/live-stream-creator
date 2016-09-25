@@ -3,7 +3,9 @@
 # ~~~~
 
 # Home page
-GET     /                                controllers.Application.index
+GET     /                                controllers.Application.index(ignored: String = "")
+GET     /create                          controllers.Application.index(ignored: String = "")
+GET     /stream/:ignored                 controllers.Application.index(ignored: String)
 
 
 # API

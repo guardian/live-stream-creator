@@ -10,6 +10,7 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="api-uri" href="@apiUri.toString">
+        <base href="/">
     </head>
     <body>
         <script src="@routes.Assets.at("jspm_packages/system.js")"></script>
@@ -20,6 +21,6 @@
             });
         </script>
 
-        <lv-app></lv-app>
+        <div data-ng-view></div>
     </body>
 </html>

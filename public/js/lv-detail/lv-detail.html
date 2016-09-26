@@ -1,23 +1,52 @@
-<a ng-href="stream/{{ctrl.stream.data.id}}">{{ctrl.stream.data.id}}</a>
-
-<yt-channel channel="ctrl.stream.data.channel"></yt-channel>
-
-<div>
-    <span ng-if="ctrl.healthcheck === undefined">
-        Loading healthcheck...
-    </span>
-    <span ng-if="ctrl.healthcheck">
-        <div>Stream Status: {{ctrl.healthcheck.streamStatus}}</div>
-        <div>Broadcast Status: {{ctrl.healthcheck.broadcastStatus}}</div>
-
-        <div ng-if="ctrl.isCurrentlyLive">
-            LIVE NOW!!
-
-            <button ng-click="ctrl.stopStream()">
-                Stop now!
-            </button>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" ng-href="/">Live Stream Creator</a>
         </div>
-    </span>
-</div>
+        <div class="navbar-collapse collapse pull-right">
+            <new-stream-link class="navbar-btn"></new-stream-link>
+        </div>
+    </div>
+</nav>
 
-<iframe width="425" height="344" ng-src="{{ctrl.embedSrc}}" frameborder="0" allowfullscreen></iframe>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Video ID</th>
+                <th>YouTube Channel</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <a ng-href="stream/{{ctrl.stream.data.id}}">{{ctrl.stream.data.id}}</a>
+                </td>
+                <td>
+                    <a ng-href="https://www.youtube.com/watch?v={{ctrl.stream.data.videoId}}" target="_blank">
+                        {{ctrl.stream.data.videoId}}
+                    </a>
+                </td>
+                <td>
+                    <yt-channel channel="ctrl.stream.data.channel"></yt-channel>
+                </td>
+                <td>
+                    <span ng-if="ctrl.healthcheck.broadcastStatus === 'complete'" class="glyphicon glyphicon-ok"></span>
+                    <span ng-if="ctrl.healthcheck.broadcastStatus === 'live'" class="glyphicon glyphicon-facetime-video blink"></span>
+                </td>
+                <td>
+                    <div ng-if="ctrl.isCurrentlyLive">
+                        <button ng-click="ctrl.stopStream()" class="btn btn-primary">Stop</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="embed-responsive embed-responsive-16by9">
+        <iframe class="embed-responsive-item" ng-src="{{ctrl.embedSrc}}" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>

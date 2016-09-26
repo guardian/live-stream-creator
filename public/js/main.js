@@ -1,4 +1,5 @@
 import angular from 'angular';
+import 'angular-bootstrap';
 import 'angular-route';
 import './util/async';
 import './services/stream-api';
@@ -17,6 +18,7 @@ const config = {
 };
 
 const app = angular.module('liveVideo', [
+    'ui.bootstrap',
     'ngRoute',
     'util.async',
     'lv.services.api.stream',

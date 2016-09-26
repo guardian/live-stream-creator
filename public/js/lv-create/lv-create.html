@@ -1,25 +1,55 @@
-<div ng-if="ctrl.incomingFail">
-    no incoming streams found!
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" ng-href="/">Live Stream Creator</a>
+        </div>
+        <div class="navbar-collapse collapse pull-right">
+            <new-stream-link class="navbar-btn"></new-stream-link>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div ng-if="ctrl.wowzaStreams.length === 0 || ctrl.incomingFailure" class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-fire blink"></span>
+        No incoming streams found. Please email <a ng-href="mailto:video.dev@theguardian.com">video.dev@theguardian.com</a> for help.
+    </div>
+
+    <div ng-if="ctrl.wowzaStreams.length > 0">
+        <form class="form-horizontal" ng-submit="ctrl.submit()">
+            <div class="form-group">
+                <label for="stream-incoming" class="col-sm-2 control-label">Incoming Stream</label>
+                <div class="col-sm-10">
+                    <select name="stream-incoming" id="stream-incoming" ng-model="ctrl.newStream.wowzaStream" class="form-control" ng-required>
+                        <option value="" disabled selected>Select a stream</option>
+                        <option ng-repeat="incoming in ctrl.wowzaStreams" value="{{incoming.data.name}}">{{incoming.data.name}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="stream-outgoing" class="col-sm-2 control-label">YouTube Channel</label>
+                <div class="col-sm-10">
+                    <select name="stream-outgoing" id="stream-outgoing" ng-model="ctrl.newStream.channel" class="form-control" ng-required>
+                        <option value="" disabled selected>Select a YouTube Channel</option>
+                        <option ng-repeat="channel in ctrl.channels" value="{{channel.data.id}}">{{channel.data.title}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="stream-title" class="col-sm-2 control-label">Video Title</label>
+                <div class="col-sm-10">
+                    <input type="text" name="title" id="stream-title" class="form-control" ng-model="ctrl.newStream.title" ng-required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
-
-<form ng-submit="ctrl.submit()">
-    <select name="wowzaStream" id="wowzaStream" ng-model="formData.wowzaStream">
-        <option ng-repeat="option in ctrl.wowzaStreams.data" value="{{option.data.name}}">{{option.data.name}}</option>
-    </select>
-
-    <select name="channel" id="channel" ng-model="formData.channel">
-        <option ng-repeat="option in ctrl.channels.data" value="{{option.data.id}}">{{option.data.title}}</option>
-    </select>
-
-    <input type="hidden" value="live" ng-model="formData.wowzaApp" />
-
-    <input type="text" name="title" ng-model="formData.title" />
-
-    <input type="submit" id="submit" value="submit" />
-</form>
-
-<div ng-if="ctrl.monitored">
-    <iframe width="425" height="344" ng-src="{{ctrl.monitorEmbed}}" frameborder="0" allowfullscreen></iframe>
-</div>
-
 

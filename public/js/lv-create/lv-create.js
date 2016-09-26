@@ -9,33 +9,30 @@ export const lvList = angular.module('lv.create', [
 
 lvList.controller('lvCreateCtrl', [
     '$scope',
-    '$http',
-    '$q',
-    '$sce',
-    'apiPoll',
+    '$location',
     'streamApi',
     'youtubeChannelApi',
     'wowzaIncomingApi',
-    function ($scope, $http, $q, $sce, apiPoll, streamApi, youtubeChannelApi, wowzaIncomingApi) {
+    function ($scope, $location, streamApi, youtubeChannelApi, wowzaIncomingApi) {
         const ctrl = this;
 
-        wowzaIncomingApi.list().then(resp => ctrl.wowzaStreams = resp)
+        wowzaIncomingApi.list()
+            .then(resp => ctrl.wowzaStreams = resp.data)
             .catch (resp => {
                 if (resp.status === 404 && resp.body.errorKey === 'not-found') {
-                    ctrl.incomingFail = true;
+                    ctrl.wowzaStreams = [];
+                    ctrl.incomingFailure = true;
                 }
             });
 
-        youtubeChannelApi.list().then(resp => ctrl.channels = resp);
+        youtubeChannelApi.list()
+            .then(resp => ctrl.channels = resp.data);
 
         ctrl.submit = () => {
-            $scope.formData.wowzaApp = 'live';
-
-            streamApi.create($scope.formData)
-                .then((resp) => {
-                    ctrl.monitored = true;
-                    ctrl.stream = resp.data.data;
-                    ctrl.monitorEmbed = $sce.trustAsResourceUrl(`https://www.youtube.com/embed/${ctrl.stream.videoId}?autoplay=1`);
+            streamApi.create(ctrl.newStream)
+                .then(resp => {
+                    ctrl.stream = resp.data;
+                    $location.path(`stream/${ctrl.stream.data.id}`);
                 })
                 .catch(() => {
 

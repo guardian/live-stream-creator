@@ -11,7 +11,7 @@ object LiveStreamApi {
 
   def create(request: YouTubeLiveStreamCreateRequest): Future[YouTubeLiveStream] = {
     for {
-      incomingStream <- transform(WowzaIncomingStreamApi.get(request.wowzaApp, request.wowzaStream))
+      incomingStream <- transform(WowzaIncomingStreamApi.get(request.wowzaApplicationInstance, request.wowzaApp, request.wowzaStream))
       channel <- transform(YouTubeChannelApi.get(request.channel))
       broadcast <- YouTubeBroadcastApi.create(channel, request.title)
       boundStream: LiveStream <- YouTubeStreamApi.create(broadcast)

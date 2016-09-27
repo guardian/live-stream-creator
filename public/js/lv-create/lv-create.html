@@ -20,9 +20,13 @@
             <div class="form-group">
                 <label for="stream-incoming" class="col-sm-2 control-label">Incoming Stream</label>
                 <div class="col-sm-10">
-                    <select name="stream-incoming" id="stream-incoming" ng-model="ctrl.newStream.wowzaStream" class="form-control" ng-required>
+                    <select name="stream-incoming"
+                            id="stream-incoming"
+                            ng-model="ctrl.newStream.wowza"
+                            class="form-control"
+                            ng-required
+                            ng-options="stream.data as stream.data.name for stream in ctrl.wowzaStreams">
                         <option value="" disabled selected>Select a stream</option>
-                        <option ng-repeat="incoming in ctrl.wowzaStreams" value="{{incoming.data.name}}">{{incoming.data.name}}</option>
                     </select>
                 </div>
             </div>
@@ -30,9 +34,13 @@
             <div class="form-group">
                 <label for="stream-outgoing" class="col-sm-2 control-label">YouTube Channel</label>
                 <div class="col-sm-10">
-                    <select name="stream-outgoing" id="stream-outgoing" ng-model="ctrl.newStream.channel" class="form-control" ng-required>
+                    <select name="stream-outgoing"
+                            id="stream-outgoing"
+                            ng-model="ctrl.newStream.channel"
+                            class="form-control"
+                            ng-required
+                            ng-options="channel.data.id as channel.data.title for channel in ctrl.channels">>
                         <option value="" disabled selected>Select a YouTube Channel</option>
-                        <option ng-repeat="channel in ctrl.channels" value="{{channel.data.id}}">{{channel.data.title}}</option>
                     </select>
                 </div>
             </div>

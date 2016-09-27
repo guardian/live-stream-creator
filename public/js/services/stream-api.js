@@ -16,6 +16,10 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
             newStreamRequest.wowzaApp = 'live';
         }
 
+        newStreamRequest.wowzaStream = newStreamRequest.wowza.name;
+        newStreamRequest.wowzaApplicationInstance = newStreamRequest.wowza.applicationInstance;
+        delete newStreamRequest.wowza;
+
         const untilStreamActive = (stream) => {
             return performHealthcheck(stream)
                 .then(healthcheck => healthcheck.data.streamStatus === 'active' ? stream : $q.reject());

@@ -6,7 +6,8 @@ case class YouTubeLiveStreamCreateRequest(
   title: String,
   channel: String,
   wowzaApp: String,
-  wowzaStream: String
+  wowzaStream: String,
+  wowzaApplicationInstance: String
 )
 
 object YouTubeLiveStreamCreateRequest {

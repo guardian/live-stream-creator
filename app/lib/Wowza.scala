@@ -17,16 +17,16 @@ trait WowzaApi {
 }
 
 object WowzaIncomingStreamApi extends WowzaApi {
-  def get(appName: String, streamName: String): Future[Option[WowzaIncomingStream]] = Future {
-    val path = getBasePath(appName, s"instances/_definst_/incomingstreams/$streamName")
+  def get(applicationInstance: String, appName: String, streamName: String): Future[Option[WowzaIncomingStream]] = Future {
+    val path = getBasePath(appName, s"instances/${applicationInstance}/incomingstreams/$streamName")
     Request.get(path).map(json => Some(json.as[WowzaIncomingStream])).getOrElse(None)
   }
 
   def list(appName: String): Future[List[WowzaIncomingStream]] = Future {
-    val path = getBasePath(appName, "instances/_definst_")
+    val path = getBasePath(appName, "instances")
     val response = Request.get(path)
 
-    (response.get \ "incomingStreams").as[List[WowzaIncomingStream]]
+    (response.get \\ "incomingStreams").flatMap(y => y.as[List[WowzaIncomingStream]]).toList
   }
 }
 

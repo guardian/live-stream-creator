@@ -8,10 +8,6 @@
                 "bucket": "gnm-multimedia-rr-deployables",
                 "publicReadAcl": false
             }
-        },
-        "cfn": {
-            "type": "cloud-formation",
-            "apps": ["live-stream-creator"],
         }
     },
     "recipes": {

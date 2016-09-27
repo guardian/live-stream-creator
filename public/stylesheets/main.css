@@ -1,4 +1,11 @@
 body {
-    margin: 0;
-    padding: 0;
+    padding-top: 70px;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
 }

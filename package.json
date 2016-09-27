@@ -1,10 +1,37 @@
 {
-    "name": "live-stream-creator",
-    "version": "1.0.0",
-    "devDependencies": {
-        "csslint": "1.0.2"
+  "name": "live-stream-creator",
+  "version": "1.0.0",
+  "devDependencies": {
+    "csslint": "1.0.2",
+    "eslint": "^3.6.0",
+    "jshint": "^2.9.3",
+    "jspm": "^0.16.45"
+  },
+  "scripts": {
+    "test": "npm run lint",
+    "lint": "npm run lint-css && npm run lint-js && npm run hint-js",
+    "lint-css": "csslint --exclude-list=*.js public/js",
+    "lint-js": "eslint public/js",
+    "hint-js": "jshint public/js",
+    "postinstall": "jspm install",
+    "dist": "jspm bundle js/main public/js/dist/build.js -m --inject --no-mangle",
+    "undist": "jspm unbundle && rm -f public/js/dist/build.js"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "public"
     },
-    "scripts": {
-        "test": "csslint --ignore=unique-headings public/stylesheets/*.css"
+    "dependencies": {
+      "angular": "github:angular/bower-angular@^1.5.8",
+      "angular-bootstrap": "github:angular-ui/bootstrap-bower@^2.1.4",
+      "angular-route": "github:angular/bower-angular-route@^1.5.8",
+      "css": "github:systemjs/plugin-css@^0.1.27",
+      "text": "github:systemjs/plugin-text@^0.0.9",
+      "theseus-angular": "npm:theseus-angular@^0.3.1"
+    },
+    "devDependencies": {
+      "traceur": "github:jmcriffey/bower-traceur@0.0.93",
+      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.93"
     }
+  }
 }

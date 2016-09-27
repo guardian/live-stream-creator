@@ -1,0 +1,54 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" ng-href="/">Live Stream Creator</a>
+        </div>
+        <div class="navbar-collapse collapse pull-right">
+            <new-stream-link class="navbar-btn"></new-stream-link>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div ng-if="ctrl.streams.length === 0" class="jumbotron">
+        <h1>Live Stream Creator</h1>
+        <p>Streaming video to the world, LIVE!</p>
+        <new-stream-link class="navbar-btn"></new-stream-link>
+    </div>
+
+    <div ng-if="ctrl.streams.length > 0">
+        <h4>Previous Live Streams</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Video ID</th>
+                    <th>YouTube Channel</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="stream in ctrl.streams">
+                    <td>
+                        <a ng-href="stream/{{stream.data.id}}">{{stream.data.id}}</a>
+                    </td>
+                    <td>
+                        <a ng-href="https://www.youtube.com/watch?v={{stream.data.videoId}}" target="_blank">
+                            {{stream.data.videoId}}
+                        </a>
+                    </td>
+                    <td>
+                        <yt-channel channel="stream.data.channel"></yt-channel>
+                    </td>
+                    <td>
+                        <span ng-if="stream.healthcheck.data.broadcastStatus === 'complete'" class="glyphicon glyphicon-ok"></span>
+                        <span ng-if="stream.healthcheck.data.broadcastStatus === 'live'" class="glyphicon glyphicon-facetime-video blink"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+

@@ -4,20 +4,43 @@
         <Name>live</Name>
         <AppType>Live</AppType>
         <Description></Description>
+        <!-- Uncomment to set application level timeout values
+        <ApplicationTimeout>60000</ApplicationTimeout>
+        <PingTimeout>12000</PingTimeout>
+        <ValidationFrequency>8000</ValidationFrequency>
+        <MaximumPendingWriteBytes>0</MaximumPendingWriteBytes>
+        <MaximumSetBufferTime>60000</MaximumSetBufferTime>
+        <MaximumStorageDirDepth>25</MaximumStorageDirDepth>
+        -->
         <Connections>
             <AutoAccept>true</AutoAccept>
             <AllowDomains></AllowDomains>
         </Connections>
+        <!--
+            StorageDir path variables
+
+            ${com.wowza.wms.AppHome} - Application home directory
+            ${com.wowza.wms.ConfigHome} - Configuration home directory
+            ${com.wowza.wms.context.VHost} - Virtual host name
+            ${com.wowza.wms.context.VHostConfigHome} - Virtual host config directory
+            ${com.wowza.wms.context.Application} - Application name
+            ${com.wowza.wms.context.ApplicationInstance} - Application instance name
+
+        -->
         <Streams>
             <StreamType>live</StreamType>
             <StorageDir>${com.wowza.wms.context.VHostConfigHome}/content</StorageDir>
             <KeyDir>${com.wowza.wms.context.VHostConfigHome}/keys</KeyDir>
-            <LiveStreamPacketizers></LiveStreamPacketizers>
+            <!-- LiveStreamPacketizers (separate with commas): cupertinostreamingpacketizer, smoothstreamingpacketizer, sanjosestreamingpacketizer, mpegdashstreamingpacketizer, cupertinostreamingrepeater, smoothstreamingrepeater, sanjosestreamingrepeater, mpegdashstreamingrepeater, dvrstreamingpacketizer, dvrstreamingrepeater -->
+            <LiveStreamPacketizers>cupertinostreamingpacketizer, mpegdashstreamingpacketizer, sanjosestreamingpacketizer, smoothstreamingpacketizer</LiveStreamPacketizers>
+            <!-- Properties defined here will override any properties defined in conf/Streams.xml for any streams types loaded by this application -->
             <Properties>
             </Properties>
         </Streams>
         <Transcoder>
+            <!-- To turn on transcoder set to: transcoder -->
             <LiveStreamTranscoder>transcoder</LiveStreamTranscoder>
+            <!-- [templatename].xml or ${SourceStreamName}.xml -->
             <Templates>gu-main.xml</Templates>
             <ProfileDir>${com.wowza.wms.context.VHostConfigHome}/transcoder/profiles</ProfileDir>
             <TemplateDir>${com.wowza.wms.context.VHostConfigHome}/transcoder/templates</TemplateDir>
@@ -25,20 +48,34 @@
             </Properties>
         </Transcoder>
         <DVR>
+            <!-- As a single server or as an origin, use dvrstreamingpacketizer in LiveStreamPacketizers above -->
+            <!-- Or, in an origin-edge configuration, edges use dvrstreamingrepeater in LiveStreamPacketizers above -->
+            <!-- As an origin, also add dvrchunkstreaming to HTTPStreamers below -->
+            <!-- If this is a dvrstreamingrepeater, define Application/Repeater/OriginURL to point back to the origin -->
+            <!-- To turn on DVR recording set Recorders to dvrrecorder.  This works with dvrstreamingpacketizer  -->
             <Recorders></Recorders>
+            <!-- As a single server or as an origin, set the Store to dvrfilestorage-->
+            <!-- edges should have this empty -->
             <Store></Store>
+            <!--  Window Duration is length of live DVR window in seconds.  0 means the window is never trimmed. -->
             <WindowDuration>0</WindowDuration>
+            <!-- Storage Directory is top level location where dvr is stored.  e.g. c:/temp/dvr -->
             <StorageDir>${com.wowza.wms.context.VHostConfigHome}/dvr</StorageDir>
+            <!-- valid ArchiveStrategy values are append, version, delete -->
             <ArchiveStrategy>append</ArchiveStrategy>
+            <!-- Properties for DVR -->
             <Properties>
             </Properties>
         </DVR>
         <TimedText>
+            <!-- VOD caption providers (separate with commas): vodcaptionprovidermp4_3gpp, vodcaptionproviderttml, vodcaptionproviderwebvtt,  vodcaptionprovidersrt, vodcaptionproviderscc -->
             <VODTimedTextProviders></VODTimedTextProviders>
+            <!-- Properties for TimedText -->
             <Properties>
             </Properties>
         </TimedText>
-        <HTTPStreamers></HTTPStreamers>
+        <!-- HTTPStreamers (separate with commas): cupertinostreaming, smoothstreaming, sanjosestreaming, mpegdashstreaming, dvrchunkstreaming -->
+        <HTTPStreamers>cupertinostreaming, smoothstreaming, sanjosestreaming, mpegdashstreaming</HTTPStreamers>
         <MediaCache>
             <MediaCacheSourceList></MediaCacheSourceList>
         </MediaCache>
@@ -57,10 +94,12 @@
             </Access>
         </Client>
         <RTP>
+            <!-- RTP/Authentication/[type]Methods defined in Authentication.xml. Default setup includes; none, basic, digest -->
             <Authentication>
                 <PublishMethod>digest</PublishMethod>
-                <PlayMethod>block</PlayMethod>
+                <PlayMethod>none</PlayMethod>
             </Authentication>
+            <!-- RTP/AVSyncMethod. Valid values are: senderreport, systemclock, rtptimecode -->
             <AVSyncMethod>senderreport</AVSyncMethod>
             <MaxRTCPWaitTime>12000</MaxRTCPWaitTime>
             <IdleFrequency>75</IdleFrequency>
@@ -70,6 +109,7 @@
             <RTSPConnectionIpAddress>0.0.0.0</RTSPConnectionIpAddress>
             <RTSPOriginIpAddress>127.0.0.1</RTSPOriginIpAddress>
             <IncomingDatagramPortRanges>*</IncomingDatagramPortRanges>
+            <!-- Properties defined here will override any properties defined in conf/RTP.xml for any depacketizers loaded by this application -->
             <Properties>
             </Properties>
         </RTP>
@@ -160,16 +200,16 @@
                 <Description>Core Security Module for Applications</Description>
                 <Class>com.wowza.wms.security.ModuleCoreSecurity</Class>
             </Module>
+            <Module>
+                <Name>ModulePushPublish</Name>
+                <Description>ModulePushPublish</Description>
+                <Class>com.wowza.wms.pushpublish.module.ModulePushPublish</Class>
+            </Module>
         </Modules>
         <!-- Properties defined here will be added to the IApplication.getProperties() and IApplicationInstance.getProperties() collections -->
         <Properties>
             <Property>
                 <Name>securityPublishRequirePassword</Name>
-                <Value>true</Value>
-                <Type>Boolean</Type>
-            </Property>
-            <Property>
-                <Name>securityPublishBlockDuplicateStreamNames</Name>
                 <Value>true</Value>
                 <Type>Boolean</Type>
             </Property>

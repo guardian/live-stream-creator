@@ -59,6 +59,24 @@
                         <Interval>0</Interval>
                     </KeyFrameInterval>
                     <Parameters></Parameters>
+                    <Overlays>
+                        <Overlay>
+                            <Name>Gu</Name>
+                            <Description></Description>
+                            <Enable>true</Enable>
+                            <ImagePath>${com.wowza.wms.context.VHostConfigHome}/content/gu.png</ImagePath>
+                            <Index>0</Index>
+                            <CheckForUpdates>true</CheckForUpdates>
+                            <Opacity>100</Opacity>
+                            <Location>
+                                <X>10</X>
+                                <Y>10</Y>
+                                <Width>${ImageWidth}</Width>
+                                <Height>${ImageHeight}</Height>
+                                <Align>left,top</Align>
+                            </Location>
+                        </Overlay>
+                    </Overlays>
                 </Video>
                 <Audio>
                     <!-- AAC, Vorbis, Opus, PassThru, Disable -->
@@ -76,24 +94,7 @@
                 <!-- default, QuickSync, CUDA, NVCUVID -->
                 <Implementation>default</Implementation>
                 <Deinterlace>true</Deinterlace>
-                <Overlays>
-                    <Overlay>
-                        <Name>Guardian</Name>
-                        <Description>Guardian Watermark</Description>
-                        <Enable>true</Enable>
-                        <ImagePath>${com.wowza.wms.context.VHostConfigHome}/content/guardian-logo.png</ImagePath>
-                        <Index>1</Index>
-                        <CheckForUpdates>false</CheckForUpdates>
-                        <Opacity>100</Opacity>
-                        <Location>
-                            <X>0</X>
-                            <Y>0</Y>
-                            <Width>${ImageWidth}</Width>
-                            <Height>${ImageHeight}</Height>
-                            <Align>hcenter,vcenter</Align>
-                        </Location>
-                    </Overlay>
-                </Overlays>
+                <Overlays></Overlays>
                 <Parameters></Parameters>
             </Video>
             <Properties>

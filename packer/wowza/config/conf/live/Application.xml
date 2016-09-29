@@ -12,7 +12,7 @@
             <StreamType>live</StreamType>
             <StorageDir>${com.wowza.wms.context.VHostConfigHome}/content</StorageDir>
             <KeyDir>${com.wowza.wms.context.VHostConfigHome}/keys</KeyDir>
-            <LiveStreamPacketizers></LiveStreamPacketizers>
+            <LiveStreamPacketizers>cupertinostreamingpacketizer, mpegdashstreamingpacketizer, sanjosestreamingpacketizer, smoothstreamingpacketizer</LiveStreamPacketizers>
             <Properties>
             </Properties>
         </Streams>
@@ -38,7 +38,7 @@
             <Properties>
             </Properties>
         </TimedText>
-        <HTTPStreamers></HTTPStreamers>
+        <HTTPStreamers>cupertinostreaming, smoothstreaming, sanjosestreaming, mpegdashstreaming</HTTPStreamers>
         <MediaCache>
             <MediaCacheSourceList></MediaCacheSourceList>
         </MediaCache>
@@ -59,7 +59,7 @@
         <RTP>
             <Authentication>
                 <PublishMethod>digest</PublishMethod>
-                <PlayMethod>block</PlayMethod>
+                <PlayMethod>none</PlayMethod>
             </Authentication>
             <AVSyncMethod>senderreport</AVSyncMethod>
             <MaxRTCPWaitTime>12000</MaxRTCPWaitTime>
@@ -76,7 +76,6 @@
         <MediaCaster>
             <RTP>
                 <RTSP>
-                    <!-- udp, interleave -->
                     <RTPTransportMode>interleave</RTPTransportMode>
                 </RTSP>
             </RTP>
@@ -102,32 +101,26 @@
                 <AVSyncTolerance>1500</AVSyncTolerance>
                 <DebugLog>false</DebugLog>
             </StreamValidator>
-            <!-- Properties defined here will override any properties defined in conf/MediaCasters.xml for any MediaCasters loaded by this applications -->
             <Properties>
             </Properties>
         </MediaCaster>
         <MediaReader>
-            <!-- Properties defined here will override any properties defined in conf/MediaReaders.xml for any MediaReaders loaded by this applications -->
             <Properties>
             </Properties>
         </MediaReader>
         <MediaWriter>
-            <!-- Properties defined here will override any properties defined in conf/MediaWriter.xml for any MediaWriter loaded by this applications -->
             <Properties>
             </Properties>
         </MediaWriter>
         <LiveStreamPacketizer>
-            <!-- Properties defined here will override any properties defined in conf/LiveStreamPacketizers.xml for any LiveStreamPacketizers loaded by this applications -->
             <Properties>
             </Properties>
         </LiveStreamPacketizer>
         <HTTPStreamer>
-            <!-- Properties defined here will override any properties defined in conf/HTTPStreamers.xml for any HTTPStreamer loaded by this applications -->
             <Properties>
             </Properties>
         </HTTPStreamer>
         <Manager>
-            <!-- Properties defined are used by the Manager -->
             <Properties>
             </Properties>
         </Manager>
@@ -160,16 +153,15 @@
                 <Description>Core Security Module for Applications</Description>
                 <Class>com.wowza.wms.security.ModuleCoreSecurity</Class>
             </Module>
+            <Module>
+                <Name>ModulePushPublish</Name>
+                <Description>ModulePushPublish</Description>
+                <Class>com.wowza.wms.pushpublish.module.ModulePushPublish</Class>
+            </Module>
         </Modules>
-        <!-- Properties defined here will be added to the IApplication.getProperties() and IApplicationInstance.getProperties() collections -->
         <Properties>
             <Property>
                 <Name>securityPublishRequirePassword</Name>
-                <Value>true</Value>
-                <Type>Boolean</Type>
-            </Property>
-            <Property>
-                <Name>securityPublishBlockDuplicateStreamNames</Name>
                 <Value>true</Value>
                 <Type>Boolean</Type>
             </Property>

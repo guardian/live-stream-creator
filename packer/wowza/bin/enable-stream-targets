@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# The module list in the POST payload overrides current modules, rather than adds to them.
+# So, use jq to read the current modules and add ModulePushPublish to it.
+MODULES=$(curl "http://localhost:8087/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/live/adv" \
+    -X GET \
+    -H "Accept: application/json" \
+    --silent | \
+    jq '.modules |= .+ [{name: "ModulePushPublish", description: "ModulePushPublish", class: "com.wowza.wms.pushpublish.module.ModulePushPublish"}] | .modules')
+
+curl "http://localhost:8087/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/live/adv" \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -d "{\"modules\": $MODULES}"

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if [ $# -ne 2 ]
+then
+  echo "usage: add-publisher <NAME> <PASSWORD>"
+  exit 1
+fi
+
+NAME=$1
+PASSWORD=$2
+
+curl "http://localhost:8087/v2/servers/_defaultServer_/publishers" \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -d "{\"name\":\"$NAME\", \"password\":\"$PASSWORD\"}"

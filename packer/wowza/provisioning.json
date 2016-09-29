@@ -24,7 +24,11 @@
         "type": "file",
         "source": "config",
         "destination": "/home/ec2-user"
-    },{
+    }, {
+        "type": "file",
+        "source": "bin",
+        "destination": "/home/ec2-user"
+    }, {
         "type": "shell",
         "script": "wowza-ami.sh",
         "execute_command": "{{ .Vars }} sudo -E bash -x '{{ .Path }}'"

@@ -3,8 +3,10 @@ import angular from 'angular';
 import './lv-create.css!';
 import template from './lv-create.html!text';
 
-export const lvList = angular.module('lv.create', [
+import '../components/wz-stream-preview/wz-stream-preview';
 
+export const lvList = angular.module('lv.create', [
+    'wz.preview'
 ]);
 
 lvList.controller('lvCreateCtrl', [

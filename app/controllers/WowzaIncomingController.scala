@@ -5,8 +5,7 @@ import java.net.URI
 import lib._
 import lib.argo.ArgoHelpers
 import lib.argo.model.{EntityResponse, Action => ArgoAction}
-import model.{WowzaIncomingStream, WowzaOutgoingStream}
-import models._
+import model.WowzaIncomingStream
 import play.api.mvc.{Action, Controller, Result}
 
 import scala.concurrent.ExecutionContext.Implicits.global

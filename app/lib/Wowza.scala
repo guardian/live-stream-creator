@@ -2,12 +2,11 @@ package lib
 
 import java.net.URI
 
-import model.{WowzaIncomingStream, WowzaOutgoingStream}
-import models._
+import model.{WowzaRawIncomingStream, WowzaIncomingStream, WowzaOutgoingStream}
 import play.api.libs.json._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait WowzaApi {
   def getBasePath(appName: String, path: String): URI = {
@@ -19,14 +18,20 @@ trait WowzaApi {
 object WowzaIncomingStreamApi extends WowzaApi {
   def get(applicationInstance: String, appName: String, streamName: String): Future[Option[WowzaIncomingStream]] = Future {
     val path = getBasePath(appName, s"instances/${applicationInstance}/incomingstreams/$streamName")
-    Request.get(path).map(json => Some(json.as[WowzaIncomingStream])).getOrElse(None)
+
+
+    Request.get(path).map(json => Some(json.as[WowzaRawIncomingStream])).map {
+      case Some(s) => WowzaIncomingStream.build(appName, s)
+    }
   }
 
   def list(appName: String): Future[List[WowzaIncomingStream]] = Future {
     val path = getBasePath(appName, "instances")
     val response = Request.get(path)
 
-    (response.get \\ "incomingStreams").flatMap(y => y.as[List[WowzaIncomingStream]]).toList
+    val streams = (response.get \\ "incomingStreams").flatMap(y => y.as[List[WowzaRawIncomingStream]]).toList
+
+    streams.map(s => WowzaIncomingStream.build(appName, s))
   }
 }
 

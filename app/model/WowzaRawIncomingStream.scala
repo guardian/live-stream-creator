@@ -49,7 +49,7 @@ object WowzaIncomingStream {
   )(unlift(WowzaIncomingStream.unapply))
 
   def build(app: String, rawIncoming: WowzaRawIncomingStream): WowzaIncomingStream = {
-    val dashUri = URI.create(s"${Config.wowzaEndpoint}:${Config.wowzaStreamingPort}/$app/${rawIncoming.applicationInstance}/${rawIncoming.name}/manifest.mpd")
+    val dashUri = URI.create(s"${Config.wowzaPublicEndpoint}:${Config.wowzaStreamingPort}/$app/${rawIncoming.applicationInstance}/${rawIncoming.name}/manifest.mpd")
 
     WowzaIncomingStream(
       app,

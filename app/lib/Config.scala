@@ -37,7 +37,9 @@ object Config {
 
   val youtubeAppName = "gu-live-stream-creator"
 
-  val wowzaEndpoint = properties("wowza.endpoint")
+  val wowzaPublicEndpoint = properties("wowza.publicEndpoint")
+
+  val wowzaInternalEndpoint = properties.getOrElse("wowza.internalEndpoint", wowzaPublicEndpoint)
 
   val wowzaApiPort = properties.getOrElse("wowza.port", "8087").toInt
 

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+curl "http://localhost:8087/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/live/transcoder" \
+    -X PUT \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -d "{\"liveStreamTranscoder\": \"transcoder\", \"templatesInUse\": \"gu-main.xml\"}"

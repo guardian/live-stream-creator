@@ -12,6 +12,7 @@ System.config({
     "angular-bootstrap": "github:angular-ui/bootstrap-bower@2.1.4",
     "angular-route": "github:angular/bower-angular-route@1.5.8",
     "css": "github:systemjs/plugin-css@0.1.27",
+    "dashjs": "npm:dashjs@2.3.0",
     "text": "github:systemjs/plugin-text@0.0.9",
     "theseus-angular": "npm:theseus-angular@0.3.1",
     "traceur": "github:jmcriffey/bower-traceur@0.0.93",
@@ -56,6 +57,12 @@ System.config({
       "ieee754": "npm:ieee754@1.1.6",
       "isarray": "npm:isarray@1.0.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
+    },
+    "npm:dashjs@2.3.0": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.0",
+      "codem-isoboxer": "npm:codem-isoboxer@0.2.2",
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "round10": "npm:round10@1.0.3"
     },
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"

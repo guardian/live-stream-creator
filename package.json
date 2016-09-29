@@ -26,6 +26,7 @@
       "angular-bootstrap": "github:angular-ui/bootstrap-bower@^2.1.4",
       "angular-route": "github:angular/bower-angular-route@^1.5.8",
       "css": "github:systemjs/plugin-css@^0.1.27",
+      "dashjs": "npm:dashjs@^2.3.0",
       "text": "github:systemjs/plugin-text@^0.0.9",
       "theseus-angular": "npm:theseus-angular@^0.3.1"
     },

@@ -10,15 +10,17 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
 
     const list = () => root.follow('streams').get();
 
-    const create = (newStreamRequest) => {
+    const create = (streamRequest) => {
+        const streamRequestCopy = angular.copy(streamRequest);
+
         // TODO look up this value via wowza api?
-        if (! newStreamRequest.wowzaApp) {
-            newStreamRequest.wowzaApp = 'live';
+        if (! streamRequestCopy.wowzaApp) {
+            streamRequestCopy.wowzaApp = 'live';
         }
 
-        newStreamRequest.wowzaStream = newStreamRequest.wowza.name;
-        newStreamRequest.wowzaApplicationInstance = newStreamRequest.wowza.applicationInstance;
-        delete newStreamRequest.wowza;
+        streamRequestCopy.wowzaStream = streamRequestCopy.wowza.name;
+        streamRequestCopy.wowzaApplicationInstance = streamRequestCopy.wowza.applicationInstance;
+        delete streamRequestCopy.wowza;
 
         const untilStreamActive = (stream) => {
             return performHealthcheck(stream)
@@ -33,7 +35,7 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
         };
 
         return root.follow('streams')
-            .post({data: newStreamRequest})
+            .post({data: streamRequestCopy})
             .then(newStream => apiPoll(() => untilStreamActive(newStream)))
             .then(activeStream => activeStream.perform('monitor', {body: {data: {monitor: true}}}))
             .then(monStream => apiPoll(() => untilStreamInTesting(monStream)))

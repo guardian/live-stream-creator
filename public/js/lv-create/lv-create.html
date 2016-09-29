@@ -31,6 +31,12 @@
                 </div>
             </div>
 
+            <div class="form-group" ng-if="ctrl.newStream.wowza !== undefined">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <wz-stream-preview class="embed-responsive embed-responsive-16by9" stream="ctrl.newStream.wowza"></wz-stream-preview>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="stream-outgoing" class="col-sm-2 control-label">YouTube Channel</label>
                 <div class="col-sm-10">

@@ -60,10 +60,22 @@
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="submit" class="btn btn-primary" ng-disabled="ctrl.creatingStream">Create</button>
                 </div>
             </div>
         </form>
+    </div>
+
+    <div ng-if="ctrl.creatingStream" class="panel panel-info">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-transfer blink"></span>
+            What's happening in the background...
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li ng-repeat="log in ctrl.logs" class="list-group-item">{{log}}</li>
+            </ul>
+        </div>
     </div>
 </div>
 

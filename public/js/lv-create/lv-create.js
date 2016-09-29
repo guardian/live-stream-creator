@@ -10,12 +10,13 @@ export const lvList = angular.module('lv.create', [
 ]);
 
 lvList.controller('lvCreateCtrl', [
+    '$rootScope',
     '$scope',
     '$location',
     'streamApi',
     'youtubeChannelApi',
     'wowzaIncomingApi',
-    function ($scope, $location, streamApi, youtubeChannelApi, wowzaIncomingApi) {
+    function ($rootScope, $scope, $location, streamApi, youtubeChannelApi, wowzaIncomingApi) {
         const ctrl = this;
 
         wowzaIncomingApi.list()
@@ -30,16 +31,28 @@ lvList.controller('lvCreateCtrl', [
         youtubeChannelApi.list()
             .then(resp => ctrl.channels = resp.data);
 
-        ctrl.submit = () => {
-            streamApi.create(ctrl.newStream)
-                .then(resp => {
-                    ctrl.stream = resp.data;
-                    $location.path(`stream/${ctrl.stream.data.id}`);
-                })
-                .catch(() => {
+        ctrl.creatingStream = false;
 
-                });
+        ctrl.logs = [];
+
+        ctrl.submit = () => {
+            ctrl.logs.push('creating YouTube stream');
+            ctrl.creatingStream = true;
+            streamApi.create(ctrl.newStream);
         };
+
+        $rootScope.$on('stream-active', () => {
+            ctrl.logs.push('waiting for YouTube to receive stream');
+        });
+
+        $rootScope.$on('stream-in-testing', () => {
+            ctrl.logs.push('YouTube looks healthy');
+            ctrl.logs.push('starting YouTube Live Video');
+        });
+
+        $rootScope.$on('stream-started', (event, stream) => {
+            $location.path(`stream/${stream.data.id}`);
+        });
     }
 ]);
 

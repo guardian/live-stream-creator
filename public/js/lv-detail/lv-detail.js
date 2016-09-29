@@ -7,7 +7,7 @@ import template from './lv-detail.html!text';
 
 export const lvDetail = angular.module('lv.detail', ['yt.channel']);
 
-lvDetail.controller('lvDetailCtrl', ['$sce', '$routeParams', 'streamApi', function ($sce, $routeParams, streamApi) {
+lvDetail.controller('lvDetailCtrl', ['$sce', '$routeParams', '$location', '$rootScope', 'streamApi', function ($sce, $routeParams, $location, $rootScope, streamApi) {
     const ctrl = this;
 
     ctrl.streamId = $routeParams.id;
@@ -26,22 +26,15 @@ lvDetail.controller('lvDetailCtrl', ['$sce', '$routeParams', 'streamApi', functi
             });
     };
 
-    /*eslint-disable */
-    // disabling eslint as WIP
-    ctrl.stopStream = () => {
-        streamApi.stop(ctrl.stream)
-            .then(resp => {
-                console.log(resp);
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    };
-    /*eslint-enable */
+    ctrl.stopStream = () => streamApi.stop(ctrl.stream);
 
     streamApi.get(ctrl.streamId).then(stream => {
         ctrl.stream = stream;
         performHealthcheck();
+    });
+
+    $rootScope.$on('stream-stopped', (event, stream) => {
+        $location.path(`stream/${stream.data.id}`);
     });
 }]);
 

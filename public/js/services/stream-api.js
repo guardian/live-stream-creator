@@ -3,7 +3,7 @@ import 'theseus-angular';
 
 export const streamApi = angular.module('lv.services.api.stream', ['theseus']);
 
-streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', function ($q, apiRoot, client, apiPoll) {
+streamApi.factory('streamApi', ['$rootScope', '$q', 'apiRoot', 'theseus.client', 'apiPoll', function ($rootScope, $q, apiRoot, client, apiPoll) {
     const root = client.resource(apiRoot);
 
     const get = (id) => root.follow('stream', {id: id}).get();
@@ -37,9 +37,25 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
         return root.follow('streams')
             .post({data: streamRequestCopy})
             .then(newStream => apiPoll(() => untilStreamActive(newStream)))
+            .then(s => {
+                $rootScope.$emit('stream-active', s.data);
+                return s;
+            })
             .then(activeStream => activeStream.perform('monitor', {body: {data: {monitor: true}}}))
+            .then(s => {
+                $rootScope.$emit('stream-monitored', s.data);
+                return s;
+            })
             .then(monStream => apiPoll(() => untilStreamInTesting(monStream)))
-            .then(monitoredStream => monitoredStream.perform('start', {body: {data: {start: true}}}));
+            .then(s => {
+                $rootScope.$emit('stream-in-testing', s.data);
+                return s;
+            })
+            .then(monitoredStream => monitoredStream.perform('start', {body: {data: {start: true}}}))
+            .then(s => {
+                $rootScope.$emit('stream-started', s.data);
+                return s;
+            });
     };
 
     const stop = (stream) => {
@@ -49,7 +65,11 @@ streamApi.factory('streamApi', ['$q', 'apiRoot', 'theseus.client', 'apiPoll', fu
         };
 
         return stream.perform('stop', {body: {data: {stop: true}}})
-            .then(maybeStopped =>apiPoll(() => untilStreamStopped(maybeStopped)));
+            .then(maybeStopped => apiPoll(() => untilStreamStopped(maybeStopped)))
+            .then(s => {
+                $rootScope.$emit('stream-stopped', s.data);
+                return s;
+            });
     };
 
     const performHealthcheck = (stream) => stream.follow('healthcheck').get();

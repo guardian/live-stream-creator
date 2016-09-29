@@ -7,10 +7,11 @@ import template from './wz-stream-preview.html!text';
 
 export const wzStreamPreview = angular.module('wz.preview', []);
 
-wzStreamPreview.controller('wzStreamPreviewCtrl', ['$scope', function ($scope) {
+wzStreamPreview.controller('wzStreamPreviewCtrl', ['$rootScope', '$scope', function ($rootScope, $scope) {
     const ctrl = this;
 
     const player = dashjs.MediaPlayer().create();
+    player.getDebug().setLogToBrowserConsole(false);
 
     $scope.$watch(() => ctrl.stream, stream => {
         if (stream) {
@@ -21,6 +22,8 @@ wzStreamPreview.controller('wzStreamPreviewCtrl', ['$scope', function ($scope) {
             }
         }
     });
+
+    $rootScope.$on('stream-started', () => player.pause());
 }]);
 
 wzStreamPreview.directive('wzStreamPreview', [function () {

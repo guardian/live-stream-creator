@@ -10,7 +10,7 @@ import scala.concurrent.Future
 
 trait WowzaApi {
   def getBasePath(appName: String, path: String): URI = {
-    val url = s"${Config.wowzaInternalEndpoint}:${Config.wowzaApiPort}/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/$appName/$path"
+    val url = s"${Config.wowzaApiEndpoint}/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/$appName/$path"
     URI.create(url)
   }
 }

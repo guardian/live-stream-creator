@@ -37,17 +37,18 @@ object Config {
 
   val youtubeAppName = "gu-live-stream-creator"
 
-  val wowzaPublicEndpoint = properties("wowza.publicEndpoint")
-
-  val wowzaInternalEndpoint = properties.getOrElse("wowza.internalEndpoint", wowzaPublicEndpoint)
-
-  val wowzaApiPort = properties.getOrElse("wowza.port", "8087").toInt
-
-  val wowzaStreamingPort = properties.getOrElse("wowza.streamingPort", "1935").toInt
+  private val wowzaInternalEndpoint = properties("wowza.internalEndpoint")
 
   val domainRoot = stage match {
     case "DEV" => "http://localhost:9000" // TODO be better!
     case _ => s"https://${properties("domain.root")}"
+  }
+
+  val wowzaApiEndpoint = s"http://$wowzaInternalEndpoint:8087"
+
+  val liveVideoStreamEndpoint = stage match {
+    case "DEV" => s"http://$wowzaInternalEndpoint:1935"
+    case _ => s"https://${properties("stream.domain.root")}"
   }
 
   val apiUri = URI.create(s"$domainRoot/api")

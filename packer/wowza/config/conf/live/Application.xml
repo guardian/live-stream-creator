@@ -118,6 +118,14 @@
         </LiveStreamPacketizer>
         <HTTPStreamer>
             <Properties>
+                <Property>
+                    <Name>mpegdashPlaylistHostProtocol</Name>
+                    <Value>https://</Value>
+                </Property>
+                <Property>
+                    <Name>mpegdashChunkHostProtocol</Name>
+                    <Value>https://</Value>
+                </Property>
             </Properties>
         </HTTPStreamer>
         <Manager>

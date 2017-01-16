@@ -1,0 +1,4 @@
+name: live-video
+mappings:
+  - prefix: live-video
+    port: 9000

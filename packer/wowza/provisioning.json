@@ -1,6 +1,6 @@
 {
     "variables": {
-        "wowza_ami": "ami-91960ce2"
+        "wowza_ami": "ami-cce0bebf"
     },
     "builders": [{
         "type": "amazon-ebs",

@@ -4,32 +4,27 @@ import java.net.URI
 
 import lib._
 import lib.argo.ArgoHelpers
-import lib.argo.model.{EntityResponse, Action => ArgoAction}
+import lib.argo.model.EntityResponse
 import model.WowzaIncomingStream
-import play.api.mvc.{Action, Controller, Result}
-
-import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.cache.Cache
+import play.api.mvc.{Action, Controller}
 
 object WowzaIncomingController extends Controller with ArgoHelpers {
   private def wrapStream(stream: WowzaIncomingStream): EntityResponse[WowzaIncomingStream] = {
     EntityResponse(data = stream)
   }
 
-  def list(appName: String) = Action.async {
-    val streamFuture = WowzaIncomingStreamApi.list(appName)
+  def list(appName: String) = Action {
+    Cache.getAs[Seq[WowzaIncomingStream]]("streams") match {
+      case Some(streams) => {
+        val uri = URI.create(s"${Config.domainRoot}/wowza/incoming/list/$appName")
 
-    streamFuture.map[Result]((streams: Seq[WowzaIncomingStream]) => {
-      streams match {
-        case Nil => respondNotFound("no incoming streams found")
-        case stream :: _ => {
-          val uri = URI.create(s"${Config.domainRoot}/wowza/incoming/list/$appName")
-
-          respondCollection[EntityResponse[WowzaIncomingStream]](
-            uri = Some(uri),
-            data = streams.map(wrapStream)
-          )
-        }
+        respondCollection[EntityResponse[WowzaIncomingStream]](
+          uri = Some(uri),
+          data = streams.map(wrapStream)
+        )
       }
-    })
+      case None => respondNotFound("no incoming streams found")
+    }
   }
 }

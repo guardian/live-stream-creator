@@ -1,13 +1,11 @@
 package controllers
 
 import com.google.api.services.youtube.model.Channel
-import lib._
 import lib.argo.ArgoHelpers
 import lib.argo.model.EntityResponse
 import model._
-import play.api.mvc.{Action, Controller, Result}
-
-import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.cache.Cache
+import play.api.mvc.{Action, Controller}
 
 object YouTubeChannelController extends Controller with ArgoHelpers {
   private def wrapChannel(channel: Channel): EntityResponse[YouTubeChannel] = {
@@ -16,18 +14,14 @@ object YouTubeChannelController extends Controller with ArgoHelpers {
     )
   }
 
-  def list() = Action.async {
-    val channelFuture = YouTubeChannelApi.list()
-
-    channelFuture.map[Result]((channels: Seq[Channel]) => {
-      channels match {
-        case Nil => respondNotFound("no channels found")
-        case channel :: _ => {
-          respondCollection[EntityResponse[YouTubeChannel]](
-            data = channels.map(wrapChannel)
-          )
-        }
+  def list() = Action {
+    Cache.getAs[Seq[Channel]]("channels") match {
+      case Some(channels) => {
+        respondCollection[EntityResponse[YouTubeChannel]](
+          data = channels.map(wrapChannel)
+        )
       }
-    })
+      case None => respondNotFound("no channels found")
+    }
   }
 }

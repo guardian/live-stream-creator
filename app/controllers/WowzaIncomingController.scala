@@ -9,6 +9,8 @@ import model.WowzaIncomingStream
 import play.api.cache.Cache
 import play.api.mvc.{Action, Controller}
 
+import play.api.Play.current
+
 object WowzaIncomingController extends Controller with ArgoHelpers {
   private def wrapStream(stream: WowzaIncomingStream): EntityResponse[WowzaIncomingStream] = {
     EntityResponse(data = stream)

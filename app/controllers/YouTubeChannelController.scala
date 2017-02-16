@@ -7,6 +7,8 @@ import model._
 import play.api.cache.Cache
 import play.api.mvc.{Action, Controller}
 
+import play.api.Play.current
+
 object YouTubeChannelController extends Controller with ArgoHelpers {
   private def wrapChannel(channel: Channel): EntityResponse[YouTubeChannel] = {
     EntityResponse(

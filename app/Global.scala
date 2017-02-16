@@ -6,6 +6,8 @@ import play.api.{Application, GlobalSettings}
 import play.filters.gzip.GzipFilter
 
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.Play.current
 
 object Global extends WithFilters(new GzipFilter) with GlobalSettings {
   override def onStart(app: Application): Unit = {

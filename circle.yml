@@ -11,10 +11,6 @@ general:
     - target/riffraff
 
 dependencies:
-  pre:
-    #decrypt encrypted credentials - https://github.com/circleci/encrypted-files/blob/master/circle.yml
-    - openssl aes-256-cbc -d -in credentials.cipher -k $KEY >> ~/.circlerc
-    - source ~/.circlerc
   cache_directories:
     - "~/.sbt"
     - "target/resolution-cache"
